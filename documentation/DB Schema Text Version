@@ -1,0 +1,41 @@
+User
+-
+ID PK int
+UserName string
+First string
+Last string
+Email string
+Password string
+ProfilePic string
+
+Game
+-
+ID PK int
+Name string
+Image string
+Description text
+Category string
+Creator FK >- User.ID
+
+Results
+-
+ID PK int
+GameID int FK >- Game.ID
+Score int
+Player FK >- User.ID
+Rating int null
+
+Question
+-
+ID PK int
+questionText string
+type string
+GameID int FK >- Game.ID
+
+
+Answers
+-
+ID PK int
+questionID int FK >- Question.ID
+text string
+correct boolean
