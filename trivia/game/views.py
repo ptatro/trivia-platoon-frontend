@@ -8,10 +8,22 @@ class GamesViewSet(viewsets.ModelViewSet):
         
 class QuestionsViewSet(viewsets.ModelViewSet):
     serializer_class = QuestionsSerializer
+
     def get_queryset(self):
         return Question.objects.filter(game=self.kwargs['game_pk'])
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['game_pk'] = self.kwargs['game_pk']
+        return context
     
 class ResultsViewSet(viewsets.ModelViewSet):
     serializer_class = ResultsSerializer
+
     def get_queryset(self):
         return Result.objects.filter(game=self.kwargs['game_pk'])
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['game_pk'] = self.kwargs['game_pk']
+        return context

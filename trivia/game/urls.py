@@ -15,7 +15,3 @@ urlpatterns = [
     url(r'^', include(result_router.urls)),
     url(r'^', include(question_router.urls))
 ]
-
-#api/games/
-#api/games/2/results
-#api/games/2/questions
