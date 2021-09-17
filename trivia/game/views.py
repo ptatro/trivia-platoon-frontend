@@ -1,5 +1,5 @@
-from .models import Game, Question, Result
-from .serializers import GamesSerializer, QuestionsSerializer, ResultsSerializer
+from .models import Game, Question, Result, Answer
+from .serializers import GamesSerializer, QuestionsSerializer, ResultsSerializer, AnswersSerializer
 from rest_framework import viewsets
 
 
@@ -30,3 +30,10 @@ class ResultsViewSet(viewsets.ModelViewSet):
         context = super().get_serializer_context()
         context["game_pk"] = self.kwargs["game_pk"]
         return context
+
+
+class AnswersViewSet(viewsets.ModelViewSet):
+    serializer_class = AnswersSerializer
+
+    def get_queryset(self):
+        return Answer.objects.filter(question=self.kwargs["question_pk"])
