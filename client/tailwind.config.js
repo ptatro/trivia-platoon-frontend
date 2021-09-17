@@ -7,7 +7,7 @@ module.exports = {
       'spaceCadet': '#2B2D42',
       'manatee': '#8D99AE',
       'aliceBlue': '#EDF2F4',
-      'imperialRed': '#EF233C',
+      'imperialRed': '#EF2E45',
       'amaranthRed': '#D90429',
     }),
     textColor: theme => ({
@@ -15,7 +15,7 @@ module.exports = {
       'spaceCadet': '#2B2D42',
       'manatee': '#8D99AE',
       'aliceBlue': '#EDF2F4',
-      'imperialRed': '#EF233C',
+      'imperialRed': '#EF2E45',
       'amaranthRed': '#D90429',
     }),
     extend: {},
