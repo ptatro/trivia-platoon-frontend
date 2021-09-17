@@ -25,8 +25,8 @@ const Navbar = (props) => {
         {userContext.token && <Link to="/" className="text-aliceBlue hover:text-gray-400 mt-5">Profile</Link>}
         <Link to="/" className="text-aliceBlue hover:text-gray-400 mt-5">Leaderboards</Link>
         {userContext.token && <Link to="/" className="text-aliceBlue hover:text-gray-400 mt-5">Create a game</Link>}
-        {!userContext.token && <Link to="/" className="text-aliceBlue hover:text-gray-400 mt-5">Log In</Link>}
-        {!userContext.token && <Link to="/" className="text-aliceBlue hover:text-gray-400 mt-5">Register</Link>}
+        {!userContext.token && <Link to="/login" className="text-aliceBlue hover:text-gray-400 mt-5">Log In</Link>}
+        {!userContext.token && <Link to="/register" className="text-aliceBlue hover:text-gray-400 mt-5">Register</Link>}
       </nav>
       <div className="flex h-11 border-1 border-black rounded-r-md bg-manatee w-8 items-center justify-center">
         <button id="collapseButton" className="h-full w-full text-xl text-aliceBlue" onClick={collapseButtonToggle}>
