@@ -35,15 +35,20 @@ class GamesSerializer(ModelSerializer):
 
 
 class QuestionsSerializer(ModelSerializer):
-    answers = AnswersSerializer(many=True, read_only=True)
+    answers = AnswersSerializer(many=True)
 
     class Meta:
         model = Question
         fields = ["id", "questionText", "type", "answers"]
 
     def create(self, validated_data):
+        print(f"this is the validated data {validated_data}")
+        answers_data = validated_data.pop('answers')
         game_pk = self.context["game_pk"]
         question = Question.objects.create(
             game=Game.objects.get(pk=game_pk), **validated_data
         )
+        for answer_data in answers_data:
+            Answer.objects.create(question=question, **answer_data)
+
         return question
