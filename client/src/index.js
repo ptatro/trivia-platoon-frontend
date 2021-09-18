@@ -4,12 +4,15 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { UserProvider } from './context/UserContext';
+import { CookiesProvider } from 'react-cookie';
 
 ReactDOM.render(
   <React.StrictMode>
-    <UserProvider>
-    <App/>
-    </UserProvider>
+    <CookiesProvider>
+      <UserProvider>
+        <App/>
+      </UserProvider>
+    </CookiesProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

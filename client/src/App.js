@@ -6,9 +6,12 @@ import {BrowserRouter as Router, Redirect, Route, Switch} from 'react-router-dom
 import { UserContext } from "./context/UserContext";
 import Register from './components/register';
 import Login from './components/login';
+import { useCookies, Cookies } from "react-cookie"
+import CreateGame from './components/createGame';
 
 function App() {
   const [userContext, setUserContext] = useContext(UserContext);
+  const [tokenCookie, setTokenCookie, removeTokenCookie] = useCookies(['token']);
 
   return (
     <div className="App h-screen bg-aliceBlue flex flex-row">
@@ -16,8 +19,9 @@ function App() {
         <Navbar/>
         <Switch>
           <Route exact path="/" component={Home}/>
-          <Route exact path="/register" component={Register}/>
-          <Route exact path="/login" component={Login}/>
+          {tokenCookie.token && <Route exact path="/creategame" component={CreateGame}/>}
+          {!tokenCookie.token && <Route exact path="/register" component={Register}/>}
+          {!tokenCookie.token && <Route exact path="/login" component={Login}/>}
           <Route><Redirect to="/"/></Route>
         </Switch>
       </Router>
