@@ -1,6 +1,5 @@
 from rest_framework.serializers import ModelSerializer
 from .models import Game, Result, Question, Answer
-# from django.contrib.auth.models import User
 
 
 class ResultsSerializer(ModelSerializer):
@@ -42,5 +41,4 @@ class QuestionsSerializer(ModelSerializer):
         )
         for answer_data in answers_data:
             Answer.objects.create(question=question, **answer_data)
-
         return question
