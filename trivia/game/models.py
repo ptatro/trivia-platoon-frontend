@@ -4,7 +4,7 @@ from accounts.models import CustomUser
 
 class Game(models.Model):
     name = models.CharField(max_length=255)
-    image = models.CharField(max_length=255)
+    image = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField()
     category = models.CharField(max_length=255)
     creator = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="games")
