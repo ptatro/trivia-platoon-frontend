@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'rest_framework.authtoken',
-    'game'
+    'game',
+    'accounts'
 ]
 
 MIDDLEWARE = [
@@ -85,6 +86,8 @@ DATABASES = {
     }
 }
 
+# Custom user model
+AUTH_USER_MODEL="accounts.CustomUser"
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -134,6 +137,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+
 REST_FRAMEWORK = {
    'DEFAULT_PERMISSION_CLASSES': [
        'rest_framework.permissions.IsAuthenticated',
@@ -142,6 +148,3 @@ REST_FRAMEWORK = {
        'rest_framework.authentication.TokenAuthentication',
    ]
 }
-
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_ALL_ORIGINS = True
