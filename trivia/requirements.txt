@@ -1,6 +1,7 @@
 asgiref==3.4.1
 click==8.0.1
 Django==3.2.7
+django-cors-headers==3.8.0
 django-rest-framework==0.1.0
 djangorestframework==3.12.4
 drf-nested-routers==0.93.3
