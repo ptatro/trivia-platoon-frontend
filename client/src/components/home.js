@@ -21,7 +21,7 @@ const Home = (props) => {
       <div className="h-full w-full flex flex-col items-center overflow-auto">
         {[...Array(20).keys()].map((i) => {return(
         <div className="transition-all h-11/12 w-11/12 grid grid-cols-4 bg-aliceBlue rounded-md mt-4 hover:bg-gray-400">
-          <h2 className="justify-self-start ml-5 text-xl">{i}</h2>
+          <h2 className="justify-self-start ml-5 text-xl">{i + 1}</h2>
           <h2 className="justify-self-start ml-5 text-xl">Sample Game</h2>
           <h2 className="justify-self-start ml-5 text-xl">Gregg R</h2>
           <h2 className="justify-self-start ml-5 text-xl">Rating</h2>
