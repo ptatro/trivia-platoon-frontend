@@ -3,7 +3,7 @@ from rest_framework.generics import CreateAPIView
 from rest_framework.permissions import AllowAny
 from .serializers import SignupSerializer
 from .models import CustomUser
-from rest_framework.authtoken.views import ObtainAuthToken
+# from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 
@@ -12,6 +12,7 @@ class SignupView(CreateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = SignupSerializer
     permission_classes = [AllowAny]
+    authentication_classes = ()
     
     def perform_create(self, serializer):
         if serializer.is_valid():
@@ -23,8 +24,8 @@ class SignupView(CreateAPIView):
             user = CustomUser.objects.create_user(username=username, password=password, email=email)
           
 
-class CustomObtainAuthToken(ObtainAuthToken):
-    def post(self, request, *args, **kwargs):
-        response = super(CustomObtainAuthToken, self).post(request, *args, **kwargs)
-        token = Token.objects.get(key=response.data['token'])
-        return Response({'token': token.key, 'id': token.user_id})
+# class CustomObtainAuthToken(ObtainAuthToken):
+#     def post(self, request, *args, **kwargs):
+#         response = super(CustomObtainAuthToken, self).post(request, *args, **kwargs)
+#         token = Token.objects.get(key=response.data['token'])
+#         return Response({'token': token.key, 'id': token.user_id})
