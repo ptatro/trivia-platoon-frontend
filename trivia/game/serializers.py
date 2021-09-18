@@ -1,6 +1,6 @@
-from rest_framework.serializers import ModelSerializer, PrimaryKeyRelatedField
+from rest_framework.serializers import ModelSerializer
 from .models import Game, Result, Question, Answer
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
 
 
 class ResultsSerializer(ModelSerializer):

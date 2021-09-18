@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from accounts.models import CustomUser
 
 
 class Game(models.Model):
@@ -7,7 +7,7 @@ class Game(models.Model):
     image = models.CharField(max_length=255)
     description = models.TextField()
     category = models.CharField(max_length=255)
-    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="games")
+    creator = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="games")
 
 
 class Question(models.Model):
@@ -18,7 +18,7 @@ class Question(models.Model):
 
 class Result(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="results")
-    player = models.ForeignKey(User, on_delete=models.CASCADE, related_name="results")
+    player = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="results")
     score = models.IntegerField(default=0)
     rating = models.IntegerField(null=True, blank=True)
 
