@@ -19,7 +19,7 @@ const Login = () => {
     setIsSubmitting(true)
     setError("")
     const genericErrorMessage = "Something went wrong! Please try again later."
-    fetch("http://localhost:8000/auth/get-token", {
+    fetch("http://localhost:8000/auth/token/obtain/", {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },

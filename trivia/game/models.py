@@ -30,7 +30,3 @@ class Answer(models.Model):
     text = models.CharField(max_length=255)
     correct = models.BooleanField()
 
-
-# api/games/
-# api/games/2/results
-# api/games/2/questions
