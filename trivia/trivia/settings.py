@@ -28,7 +28,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -149,4 +148,3 @@ REST_FRAMEWORK = {
        'rest_framework.authentication.TokenAuthentication',
    ]
 }
-
