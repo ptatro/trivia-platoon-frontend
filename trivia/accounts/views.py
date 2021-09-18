@@ -12,7 +12,6 @@ class SignupView(CreateAPIView):
     
     def perform_create(self, serializer):
         if serializer.is_valid():
-            print(serializer.validated_data)
             username = serializer.validated_data["username"]
             password = serializer.validated_data["password"]
             email = serializer.validated_data["email"]

@@ -16,5 +16,5 @@ urlpatterns = [
     url(r"^", include(game_router.urls)),
     url(r"^", include(result_router.urls)),
     url(r"^", include(question_router.urls)),
-    url(r"^", include(answer_router.urls))
+    url(r"^", include(answer_router.urls)),
 ]
