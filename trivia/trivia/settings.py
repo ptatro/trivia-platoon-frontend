@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'game',
-    'accounts'
+    'accounts',
+    'rest_framework_swagger',
 ]
 
 MIDDLEWARE = [
@@ -60,7 +61,7 @@ ROOT_URLCONF = 'trivia.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['./trivia/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

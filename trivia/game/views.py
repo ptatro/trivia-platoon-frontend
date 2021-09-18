@@ -24,9 +24,11 @@ class QuestionsViewSet(viewsets.ModelViewSet):
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        context["game_pk"] = self.kwargs["game_pk"]
+        try:
+            context["game_pk"] = self.kwargs["game_pk"]
+        except Exception as e:
+            pass    
         return context
-
 
 class ResultsViewSet(viewsets.ModelViewSet):
     serializer_class = ResultsSerializer
@@ -36,14 +38,17 @@ class ResultsViewSet(viewsets.ModelViewSet):
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        context["game_pk"] = self.kwargs["game_pk"]
+        try:
+            context["game_pk"] = self.kwargs["game_pk"]
+        except Exception as e:
+            pass 
         return context
-
 
 class AnswersViewSet(viewsets.ModelViewSet):
     serializer_class = AnswersSerializer
 
     def get_queryset(self):
         return Answer.objects.filter(question=self.kwargs["question_pk"])
+
 
 
