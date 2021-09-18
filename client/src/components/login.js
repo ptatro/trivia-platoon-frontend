@@ -32,8 +32,9 @@ const Login = () => {
             console.log(await response.json());
         } else {
           const data = await response.json()
-          console.log(data.token);
+          console.log(data);
           setCookie("token", data.token);
+          setCookie("user", data.id);
           history.push("/");
         }
       })
