@@ -4,21 +4,13 @@ from django.contrib.auth.models import User
 
 
 class ResultsSerializer(ModelSerializer):
-    player = PrimaryKeyRelatedField(read_only=True)
-
     class Meta:
         model = Result
         fields = ["id", "score", "rating", "player"]
 
     def create(self, validated_data):
         game = Game.objects.get(pk=self.context["game_pk"])
-
-        """
-        Need to figure out how to get the player ID here. Whether it is passed in the actual request or what not. Might need this passed in from the view as context depending on how we figure that out.
-        """
-
-        player = User.objects.get(pk=1)
-        question = Result.objects.create(game=game, player=player, **validated_data)
+        question = Result.objects.create(game=game, **validated_data)
         return question
 
 
