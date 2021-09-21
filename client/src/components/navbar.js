@@ -8,7 +8,7 @@ const Navbar = (props) => {
   const history = useHistory();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [userContext, setUserContext] = useContext(UserContext);
-  const [tokenCookie, setTokenCookie, removeTokenCookie] = useCookies(['token']);
+  const [refreshCookie, setRefreshCookie, removeRefreshCookie] = useCookies(['refresh']);
   const collapseButtonToggle = () => {
     let button = document.getElementById("collapseButton");
     button.innerText = isCollapsed ? "<<" : ">>"
@@ -16,7 +16,8 @@ const Navbar = (props) => {
   }
 
   const logOutHandler = () => {
-    removeTokenCookie("token");
+    removeRefreshCookie("refresh");
+    removeRefreshCookie("user");
     history.push("/");
   }
 
@@ -30,12 +31,12 @@ const Navbar = (props) => {
          "transition-all duration-700 text-aliceBlue text-md overflow-hidden opacity-100 md:text-3xl"}>Trivia Platoon</h1>
         </div>
         <Link to="/" className="text-aliceBlue hover:text-gray-400">Home</Link>
-        {tokenCookie.token && <Link to="/" className="text-aliceBlue hover:text-gray-400 mt-5">Profile</Link>}
+        {refreshCookie.refresh && <Link to="/" className="text-aliceBlue hover:text-gray-400 mt-5">Profile</Link>}
         {/* <Link to="/" className="text-aliceBlue hover:text-gray-400 mt-5">Leaderboards</Link> */}
-        {tokenCookie.token && <Link to="/creategame" className="text-aliceBlue hover:text-gray-400 mt-5">Create a game</Link>}
-        {!tokenCookie.token && <Link to="/login" className="text-aliceBlue hover:text-gray-400 mt-5">Log In</Link>}
-        {!tokenCookie.token && <Link to="/register" className="text-aliceBlue hover:text-gray-400 mt-5">Register</Link>}
-        {tokenCookie.token && <button to="/" className="text-aliceBlue hover:text-gray-400 mt-20" onClick={logOutHandler}>Log Out</button>}
+        {refreshCookie.refresh && <Link to="/creategame" className="text-aliceBlue hover:text-gray-400 mt-5">Create a game</Link>}
+        {!refreshCookie.refresh && <Link to="/login" className="text-aliceBlue hover:text-gray-400 mt-5">Log In</Link>}
+        {!refreshCookie.refresh && <Link to="/register" className="text-aliceBlue hover:text-gray-400 mt-5">Register</Link>}
+        {refreshCookie.refresh && <button to="/" className="text-aliceBlue hover:text-gray-400 mt-20" onClick={logOutHandler}>Log Out</button>}
       </nav>
       <div className="flex h-11 border-1 border-black rounded-r-md bg-manatee w-8 items-center justify-center">
         <button id="collapseButton" className="h-full w-full text-xl text-aliceBlue" onClick={collapseButtonToggle}>

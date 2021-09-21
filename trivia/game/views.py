@@ -2,11 +2,13 @@ from django.db.models import query
 from .models import Game, Question, Result, Answer
 from .serializers import GamesSerializer, QuestionsSerializer, ResultsSerializer, AnswersSerializer
 from rest_framework import viewsets
-
+from rest_framework.permissions import AllowAny
 
 class GamesViewSet(viewsets.ModelViewSet):
     serializer_class = GamesSerializer
-
+    permission_classes = [AllowAny]
+    authentication_classes = ()
+    
     def get_queryset(self):
         if self.request.query_params:
             if self.request.query_params['name']:
