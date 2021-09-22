@@ -11,11 +11,96 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import environ
 import os
 from datetime import timedelta
 
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Take environment variables from .env file
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
+# False if not in os.environ because of casting above
+DEBUG = env('DEBUG')
+
+# Raises Django's ImproperlyConfigured
+# exception if AWS_REGION not in os.environ
+AWS_REGION = env('AWS_REGION')
+
+# Raises Django's ImproperlyConfigured
+# exception if AWS_STORAGE_BUCKET_NAME not in os.environ
+AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
+
+# Raises Django's ImproperlyConfigured
+# exception if AWS_S3_ENDPOINT_URL not in os.environ
+#WS_S3_ENDPOINT_URL = env('AWS_S3_ENDPOINT_URL')
+
+# Raises Django's ImproperlyConfigured
+# exception if AWS_ACCESS_KEY_ID not in os.environ
+AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
+
+# Raises Django's ImproperlyConfigured
+# exception if AWS_SECRET_ACCESS_KEY not in os.environ
+AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
+
+AWS_S3_CALLING_FORMAT = "boto.s3.connection.OrdinaryCallingFormat"
+AWS_PRELOAD_METADATA = True
+
+# AWS_S3_OBJECT_PARAMETERS = {
+#     'Expires': 'Thu, 31 Dec 2099 20:00:00 GMT',
+#     'CacheControl': 'max-age=94608000',
+# }
+
+if AWS_STORAGE_BUCKET_NAME:
+    #STATIC_URL = 'https://s3-%s.amazonaws.com/%s/static/' % (AWS_REGION, AWS_STORAGE_BUCKET_NAME)
+    #MEDIA_URL = 'https://s3-%s.amazonaws.com/%s/media/' % (AWS_REGION, AWS_STORAGE_BUCKET_NAME)
+    STATIC_URL = 'https://%s.s3.%s.amazonaws.com/static/' % (AWS_STORAGE_BUCKET_NAME, AWS_REGION)
+    MEDIA_URL = 'https://%s.s3.%s.amazonaws.com/media/' % (AWS_STORAGE_BUCKET_NAME, AWS_REGION)
+    STATICFILES_STORAGE = 'trivia.customstorages.StaticStorage'
+    DEFAULT_FILE_STORAGE = 'trivia.customstorages.MediaStorage'
+    STATICFILES_LOCATION = 'static'  # name of folder within bucket
+    MEDIAFILES_LOCATION = 'media'    # name of folder within bucket
+else:
+    STATIC_URL = '/static/'
+    MEDIA_URL = '/media/'
+
+MEDIA_URL = os.environ.get('MEDIA_URL', MEDIA_URL)
+STATIC_URL = os.environ.get('STATIC_URL', STATIC_URL)
+
+def get_static_memcache():
+    from urllib.parse import urlparse
+    if os.environ.get('REDIS_URL', ''):
+        redis_url = urlparse(os.environ.get('REDIS_URL'))
+        return {
+            "BACKEND": "redis_cache.RedisCache",
+            'TIMEOUT': None,
+            "LOCATION": "{0}:{1}".format(redis_url.hostname, redis_url.port),
+            "OPTIONS": {
+                "PASSWORD": redis_url.password,
+                "DB": 0,
+            }
+        }
+    return {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'TIMEOUT': None,
+        'OPTIONS': {
+            'MAX_ENTRIES': 5000
+        }
+    }
+CACHES = {
+    # Replace the default cache with your existing one (if you have any)
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'
+    },
+    'collectfast': get_static_memcache(),
+}
+COLLECTFAST_CACHE = 'collectfast'
 
 
 # Quick-start development settings - unsuitable for production
@@ -43,6 +128,7 @@ INSTALLED_APPS = [
     'game',
     'accounts',
     'rest_framework_swagger',
+    'storages'
 ]
 
 MIDDLEWARE = [
@@ -138,16 +224,18 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+#DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 REST_FRAMEWORK = {
-   'DEFAULT_PERMISSION_CLASSES': [
-       'rest_framework.permissions.IsAuthenticated',
-   ],
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ), 
+#    'DEFAULT_PERMISSION_CLASSES': [
+#        'rest_framework.permissions.IsAuthenticated',
+#    ],
+#     'DEFAULT_AUTHENTICATION_CLASSES': (
+# 'rest_framework_simplejwt.authentication.JWTAuthentication',
+#     ), 
 }
 
 SIMPLE_JWT = {

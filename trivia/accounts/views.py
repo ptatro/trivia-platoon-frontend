@@ -16,6 +16,6 @@ class SignupView(CreateAPIView):
             password = serializer.validated_data["password"]
             email = serializer.validated_data["email"]
 
-            user = CustomUser.objects.create_user(username=username, password=password, email=email)
+            CustomUser.objects.create_user(username=username, password=password, email=email)
           
 

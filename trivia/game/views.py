@@ -1,9 +1,7 @@
-from django.db.models import query
 from .models import Game, Question, Result, Answer
 from .serializers import GamesSerializer, QuestionsSerializer, ResultsSerializer, AnswersSerializer
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
-
 
 class GamesViewSet(viewsets.ModelViewSet):
     serializer_class = GamesSerializer
@@ -61,6 +59,4 @@ class AnswersViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Answer.objects.filter(question=self.kwargs["question_pk"])
-
-
 

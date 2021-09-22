@@ -1,7 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 from .models import Game, Result, Question, Answer
 
-
 class ResultsSerializer(ModelSerializer):
     class Meta:
         model = Result
