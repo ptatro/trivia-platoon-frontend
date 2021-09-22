@@ -1,13 +1,16 @@
 import React, { useContext, useEffect, useState } from "react"
 import { useCookies } from "react-cookie"
-import { useParams } from "react-router";
+import { useParams, useHistory } from "react-router";
 import { UserContext } from "../context/UserContext";
 
 const GamePage = (props) => {
   const [gameDetailsCollapsed, setGameDetailsCollapsed] = useState(false);
   const [game, setGame] = useState(null);
   const {gameId} = useParams();
-  const [error, setError] = useState("")
+  const [error, setError] = useState("");
+  const history = useHistory();
+  const [userContext, setUserContext] = useContext(UserContext);
+
   const gameDetailsCollapseButtonToggle = () => {
     let button = document.getElementById("gameDetailsCollapseButton");
     button.innerText = gameDetailsCollapsed ? "^" : "v"
@@ -50,7 +53,7 @@ const GamePage = (props) => {
       <div className={gameDetailsCollapsed ? "transition-all duration-300 flex flex-col w-4/5 h-0 bg-manatee rounded-b-lg" :
         "transition-all duration-300 flex flex-col w-4/5 h-2/5 bg-manatee rounded-b-lg"}>
         <div className="h-16 bg-imperialRed overflow-hidden">
-          <h1 className="text-md text-aliceBlue mt-4 lg:text-3xl md:text-2xl">Game Title</h1>
+          <h1 className="text-md text-aliceBlue mt-4 lg:text-3xl md:text-2xl">{game ? game.name : ""}</h1>
         </div>
         <div className="flex flex-col h-full w-full">
         {error && <h1 className="mt-4 text-lg text-red-600">{error}</h1>}
@@ -66,8 +69,8 @@ const GamePage = (props) => {
             <label className="text-aliceBlue mt-4 mr-2" htmlFor="categorySelect">Category</label>
             <input disabled className="w-3/5 h-10 text-lg" id="gameCategoryText" type="text" value={game ? game.category : ""}></input>
             <div className="flex w-full items-center justify-center">
-              <button className="transition-all duration-300 bg-aliceBlue w-1/5 h-8 my-4 rounded-md self-center hover:bg-gray-300 mr-2"
-                onClick={(e) => {console.log("Play"); e.preventDefault();}}>
+              <button disabled={userContext.access ? false : true} className=" transition-all duration-300 bg-aliceBlue w-1/5 h-8 my-4 rounded-md self-center mr-2 hover:bg-gray-300 disabled:opacity-50"
+                onClick={(e) => {history.push(`/play/${gameId}`); e.preventDefault();}} title={userContext.access ? null : "Log in to play"}>
                 Play
               </button>
             </div>

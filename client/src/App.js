@@ -9,6 +9,7 @@ import Login from './components/login';
 import { useCookies, Cookies } from "react-cookie"
 import CreateGame from './components/createGame';
 import GamePage from './components/gamePage';
+import PlayGame from './components/playGame';
 
 function App() {
   const [userContext, setUserContext] = useContext(UserContext);
@@ -49,6 +50,7 @@ function App() {
         <Switch>
           <Route exact path="/" component={Home}/>
           <Route exact path="/game/:gameId" component={GamePage}/>
+          {refreshCookie.refresh && <Route exact path="/play/:gameId" component={PlayGame}/>}
           {refreshCookie.refresh && <Route exact path="/creategame" component={CreateGame}/>}
           {!refreshCookie.refresh && <Route exact path="/register" component={Register}/>}
           {!refreshCookie.refresh && <Route exact path="/login" component={Login}/>}
