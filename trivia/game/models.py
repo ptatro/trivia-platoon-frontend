@@ -1,10 +1,15 @@
 from django.db import models
 from accounts.models import CustomUser
+import uuid
 
+def get_file_path(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = "%s.%s" % (uuid.uuid4(), ext)
+    return filename
 
 class Game(models.Model):
     name = models.CharField(max_length=255)
-    image = models.CharField(max_length=255, null=True, blank=True)
+    image = models.FileField(upload_to=get_file_path,default='imageNotAvailable.jpg')
     description = models.TextField()
     category = models.CharField(max_length=255)
     creator = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="games")
@@ -29,4 +34,3 @@ class Answer(models.Model):
     )
     text = models.CharField(max_length=255)
     correct = models.BooleanField()
-
