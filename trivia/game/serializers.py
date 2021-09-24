@@ -1,7 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 from .models import Game, Result, Question, Answer
 
-
 class ResultsSerializer(ModelSerializer):
     class Meta:
         model = Result
@@ -42,3 +41,9 @@ class QuestionsSerializer(ModelSerializer):
         for answer_data in answers_data:
             Answer.objects.create(question=question, **answer_data)
         return question
+        
+    def update(self, instance, validated_data):
+        instance.questionText = validated_data.get('questionText', instance.questionText)
+        instance.type = validated_data.get('type', instance.type)
+        instance.save()
+        return instance

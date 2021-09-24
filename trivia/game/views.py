@@ -1,17 +1,27 @@
-from django.db.models import query
 from .models import Game, Question, Result, Answer
 from .serializers import GamesSerializer, QuestionsSerializer, ResultsSerializer, AnswersSerializer
 from rest_framework import viewsets
-
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 class GamesViewSet(viewsets.ModelViewSet):
     serializer_class = GamesSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    #authentication_classes = ()
 
     def get_queryset(self):
         if self.request.query_params:
-            if self.request.query_params['name']:
-                game_name= self.request.query_params['name']
-                queryset = Game.objects.filter(name=game_name)
+            try: 
+                if self.request.query_params['name']:
+                    game_name= self.request.query_params['name']
+                    queryset = Game.objects.filter(name=game_name)
+            except Exception as e:
+                pass 
+            try: 
+                if self.request.query_params['creator']:
+                    creator_name= self.request.query_params['creator']
+                    queryset = Game.objects.filter(creator=creator_name)
+            except Exception as e:
+                pass 
         else:
             queryset = Game.objects.all()
         return queryset
@@ -49,6 +59,4 @@ class AnswersViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Answer.objects.filter(question=self.kwargs["question_pk"])
-
-
 
