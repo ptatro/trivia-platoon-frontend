@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useHistory } from "react-router";
 import { UserContext } from "../context/UserContext"
 import { useCookies } from "react-cookie"
-
+import jwt_decode from "jwt-decode";
 const Login = () => {
   const history = useHistory();
   const [userContext, setUserContext] = useContext(UserContext);
@@ -11,7 +11,7 @@ const Login = () => {
   const [password, setPassword] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState("")
-  const [cookies, setCookie, removeCookie] = useCookies(['cookie-name']);
+  const [cookies, setCookie, removeCookie] = useCookies(['refresh']);
 
   const formSubmitHandler = e => {
     
@@ -32,9 +32,10 @@ const Login = () => {
             console.log(await response.json());
         } else {
           const data = await response.json()
-          console.log(data);
-          setCookie("token", data.token);
-          setCookie("user", data.id);
+          let user_id = jwt_decode(data.access).user_id;
+          setCookie("refresh", data.refresh);
+          setCookie("user", user_id);
+          setUserContext((oldContext) => {return {...oldContext, access:data.access}});
           history.push("/");
         }
       })

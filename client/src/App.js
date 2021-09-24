@@ -8,10 +8,40 @@ import Register from './components/register';
 import Login from './components/login';
 import { useCookies, Cookies } from "react-cookie"
 import CreateGame from './components/createGame';
+import GamePage from './components/gamePage';
+import PlayGame from './components/playGame';
 
 function App() {
   const [userContext, setUserContext] = useContext(UserContext);
-  const [tokenCookie, setTokenCookie, removeTokenCookie] = useCookies(['token']);
+  const [refreshCookie, setRefreshCookie, removeRefreshCookie] = useCookies(['refresh']);
+
+  const verifyUser = useCallback(() => {
+    fetch("http://localhost:8000/auth/token/refresh/", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        "refresh": refreshCookie.refresh
+      })
+    }).then(async response => {
+      if (response.ok) {
+        const data = await response.json()
+        setUserContext(oldValues => {
+          return { ...oldValues, access: data.access }
+        })
+      } else {
+        setUserContext(oldValues => {
+          return { ...oldValues, access: null }
+        })
+      }
+      // call refreshToken every 14.5 minutes to renew the authentication token.
+      setTimeout(verifyUser, 14.5 * 60 * 1000)
+    })
+  }, [setUserContext])
+  useEffect(() => {
+    verifyUser()
+  }, [verifyUser])
+
 
   return (
     <div className="App h-screen bg-aliceBlue flex flex-row">
@@ -19,9 +49,11 @@ function App() {
         <Navbar/>
         <Switch>
           <Route exact path="/" component={Home}/>
-          {tokenCookie.token && <Route exact path="/creategame" component={CreateGame}/>}
-          {!tokenCookie.token && <Route exact path="/register" component={Register}/>}
-          {!tokenCookie.token && <Route exact path="/login" component={Login}/>}
+          <Route exact path="/game/:gameId" component={GamePage}/>
+          {refreshCookie.refresh && <Route exact path="/play/:gameId" component={PlayGame}/>}
+          {refreshCookie.refresh && <Route exact path="/creategame" component={CreateGame}/>}
+          {!refreshCookie.refresh && <Route exact path="/register" component={Register}/>}
+          {!refreshCookie.refresh && <Route exact path="/login" component={Login}/>}
           <Route><Redirect to="/"/></Route>
         </Switch>
       </Router>
