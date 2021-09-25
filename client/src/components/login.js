@@ -19,7 +19,7 @@ const Login = () => {
     setIsSubmitting(true)
     setError("")
     const genericErrorMessage = "Something went wrong! Please try again later."
-    fetch("http://localhost:8000/auth/token/obtain/", {
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}auth/token/obtain/`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -31,7 +31,7 @@ const Login = () => {
             setError(genericErrorMessage)
             console.log(await response.json());
         } else {
-          const data = await response.json()
+          const data = await response.json();
           let user_id = jwt_decode(data.access).user_id;
           setCookie("refresh", data.refresh);
           setCookie("user", user_id);

@@ -20,7 +20,7 @@ const PlayGame = (props) => {
   const genericErrorMessage = "Something went wrong! Please try again later.";
 
   const getGame = async() => {
-    fetch("http://localhost:8000/api/games/" + `${gameId}/`, {
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games/${gameId}/`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -42,7 +42,7 @@ const PlayGame = (props) => {
   }
 
   const getQuestions = async() => {
-    fetch("http://localhost:8000/api/games/" + `${gameId}/questions`, {
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games/${gameId}/questions/`, {
       method: "GET",
       credentials: "include",
       headers: {
@@ -72,7 +72,7 @@ const PlayGame = (props) => {
 
       player: cookies.user
     }
-    fetch("http://localhost:8000/api/games/" + gameId + "/results/", {
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games/${gameId}/results/`, {
       method: "POST",
       credentials: "include",
       headers: {
@@ -103,7 +103,7 @@ const PlayGame = (props) => {
       rating: document.getElementById("ratingSelect").value
     }
 
-    fetch("http://localhost:8000/api/games/" + gameId + `/results/${resultsId}/`, {
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games/${gameId}/results/${resultsId}/`, {
       method: "PUT",
       credentials: "include",
       headers: {
@@ -118,6 +118,7 @@ const PlayGame = (props) => {
           setError(genericErrorMessage);
       } else {
         let data = await response.json();
+        console.log(data);
         setError("");
         setRatingSubmitted(true);
       }

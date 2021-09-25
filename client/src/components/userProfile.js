@@ -1,71 +1,75 @@
 import React, { useContext, useEffect, useState } from "react"
 import { Link } from "react-router-dom";
-import { useHistory } from "react-router";
+import { useHistory, useParams } from "react-router";
+import { UserContext } from "../context/UserContext"
+import { useCookies } from "react-cookie"
 
-const Home = (props) => {
+const Profile = (props) => {
+  const [userContext, setUserContext] = useContext(UserContext);
+  const [idCookie, setIdCookie, removeIdCookie] = useCookies(['user']);
+  const { profileUserId } = useParams();
   const [games, setGames] = useState([]);
   const [error, setError] = useState("");
   const [firstRequestDone, setFirstRequestDone] = useState(false);
   const history = useHistory();
 
-  const getGames = async() => {
+  const getUserGames = async() => {
     const genericErrorMessage = "Something went wrong! Please try again later."
-    fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games/`, {
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games?creator=${profileUserId}`, {
       method: "GET",
-      //credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },
     })
       .then(async response => {
-        //setIsSubmitting(false)
         if (!response.ok) {
             let data = await response.json();
             setError(genericErrorMessage);
             console.log(data);
             setFirstRequestDone(false);
-            setTimeout(getGames, 1 * 60 * 1000);
+            setTimeout(getUserGames, 1 * 60 * 1000);
         } else {
           let data = await response.json();
+          console.log(data);
           setGames(data);
           setError("");
           setFirstRequestDone(true);
         }
       })
       .catch(error => {
-        //setIsSubmitting(false)
         setError(genericErrorMessage)
         console.log(error);
         setFirstRequestDone(false);
-        setTimeout(getGames, 1 * 60 * 1000);
+        setTimeout(getUserGames, 1 * 60 * 1000);
       })
   }
+
   useEffect(() => {
     if(!firstRequestDone){
-      getGames();
+      getUserGames();
     }
-  }, [games, getGames, firstRequestDone]);
+  }, [games, getUserGames, firstRequestDone]);
+
 
   return (<div className="transition-all flex flex-col w-full h-full items-center">
-    {/* Intro banner */}
-    <div className="flex flex-col w-4/5 h-1/4 bg-manatee rounded-b-lg">
+    {/* Profile banner */}
+    <div className="flex flex-col w-4/5 h-auto bg-manatee rounded-b-lg">
       <div className="h-16 bg-imperialRed overflow-hidden">
-        <h1 className="text-md text-aliceBlue mt-4 lg:text-3xl md:text-2xl">Welcome to Trivia Platoon, the collaborative trivia game.</h1>
+        <h1 className="text-md text-aliceBlue mt-4 lg:text-3xl md:text-2xl">Profile</h1>
       </div>
-      <h2 className="text-xl text-aliceBlue mt-4 md:text-2xl">1. Create a game.</h2>
-      <h2 className="text-xl text-aliceBlue mt-4 md:text-2xl">2. Invite your friends.</h2>
-      <h2 className="text-xl text-aliceBlue mt-4 md:text-2xl">3. Profit?</h2>
     </div>
     {/* Game list */}
     <div className="flex flex-col w-4/5 h-3/5 bg-manatee rounded-lg mt-10 items-center overflow-auto">
       <div className="h-16 w-full bg-imperialRed overflow-hidden justify-center"><h1 className="text-md text-aliceBlue mt-4 lg:text-3xl md:text-2xl">Game List</h1></div>
       <div className="h-full w-full flex flex-col items-center overflow-auto">
+        {!games && firstRequestDone && 
+        <h2>This user doesn't have any games created.</h2>}
         {games && games.map((g,i) => {
         return <div className="transition-all h-11/12 w-11/12 grid grid-cols-4 bg-aliceBlue rounded-md mt-4 hover:bg-gray-400" onClick={() => history.push(`/game/${g.id}`)}>
           <h2 className="justify-self-start ml-5 text-xl">{i + 1}</h2>
           <h2 className="justify-self-start ml-5 text-xl">{g.name}</h2>
           <h2 className="justify-self-start ml-5 text-xl">{g.category}</h2>
-          <h2 className="justify-self-start ml-5 text-xl">Rating</h2>
+          <h2 className="justify-self-start ml-5 text-xl">{Number(g.rating) === 0 ? g.rating : "None"}</h2>
         </div>
         })}
       </div>
@@ -73,4 +77,4 @@ const Home = (props) => {
   </div>);
 }
 
-export default Home;
+export default Profile;

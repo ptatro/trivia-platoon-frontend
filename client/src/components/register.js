@@ -19,7 +19,7 @@ const Register = (props) => {
     setIsSubmitting(true)
     setError("")
     const genericErrorMessage = "Something went wrong! Please try again later."
-    fetch("http://localhost:8000/auth/signup", {
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}auth/signup`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },

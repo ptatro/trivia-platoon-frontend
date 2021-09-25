@@ -4,6 +4,7 @@
 node_modules
 /.pnp
 .pnp.js
+.env
 
 # testing
 coverage
@@ -12,7 +13,7 @@ coverage
 build
 
 # back end
-/trivia
+/trivia-platoon-backend
 
 # misc
 .DS_Store

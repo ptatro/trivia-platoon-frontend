@@ -10,13 +10,14 @@ import { useCookies, Cookies } from "react-cookie"
 import CreateGame from './components/createGame';
 import GamePage from './components/gamePage';
 import PlayGame from './components/playGame';
+import Profile from './components/userProfile';
 
 function App() {
   const [userContext, setUserContext] = useContext(UserContext);
   const [refreshCookie, setRefreshCookie, removeRefreshCookie] = useCookies(['refresh']);
 
   const verifyUser = useCallback(() => {
-    fetch("http://localhost:8000/auth/token/refresh/", {
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}auth/token/refresh/`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -52,6 +53,7 @@ function App() {
           <Route exact path="/game/:gameId" component={GamePage}/>
           {refreshCookie.refresh && <Route exact path="/play/:gameId" component={PlayGame}/>}
           {refreshCookie.refresh && <Route exact path="/creategame" component={CreateGame}/>}
+          {refreshCookie.refresh && <Route exact path="/profile/:profileUserId" component={Profile}/>}
           {!refreshCookie.refresh && <Route exact path="/register" component={Register}/>}
           {!refreshCookie.refresh && <Route exact path="/login" component={Login}/>}
           <Route><Redirect to="/"/></Route>
