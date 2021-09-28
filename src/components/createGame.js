@@ -45,7 +45,7 @@ const CreateGame = () => {
       }
     }
     if(questionData.answers.length < 2){return;}
-    console.log(questionData);
+    clearQuestionFields();
     setQuestions([...questions, questionData]);
   }
 
@@ -57,6 +57,16 @@ const CreateGame = () => {
     document.getElementById("questionTextArea").value = "";
     document.getElementById("typeSelectBlank").selected = true;
     setQuestionType("");
+  }
+
+  const clearQuestionFields = () => {
+    document.getElementById("questionTextArea").value = "";
+    if(questionType === "multipleChoice"){
+      document.getElementById("mcInput0").value = "";
+      document.getElementById("mcInput1").value = "";
+      document.getElementById("mcInput2").value = "";
+      document.getElementById("mcInput3").value = "";
+    }
   }
 
   const gameDetailsCollapseButtonToggle = () => {
@@ -72,21 +82,31 @@ const CreateGame = () => {
   }
 
   const submitGame = async() => {
-    let gameData = {
-      name: document.getElementById("gameTitleInput").value,
-      description: document.getElementById("gameDescriptionText").value,
-      category: document.getElementById("categorySelect").value,
-      creator: idCookie.user,
+    let formData = new FormData();
+    formData.append("name", document.getElementById("gameTitleInput").value);
+    formData.append("description", document.getElementById("gameDescriptionText").value);
+    formData.append("category", document.getElementById("categorySelect").value);
+    formData.append("creator", idCookie.user);
+
+    // let gameData = {
+    //   name: document.getElementById("gameTitleInput").value,
+    //   description: document.getElementById("gameDescriptionText").value,
+    //   category: document.getElementById("categorySelect").value,
+    //   creator: idCookie.user,
+    // }
+
+    if(document.getElementById("gameImageUpload").files[0]){
+      //gameData.image = document.getElementById("gameImageUpload").files[0];
+      formData.append("image", document.getElementById("gameImageUpload").files[0]);
     }
     const genericErrorMessage = "Something went wrong! Please try again later."
     fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games/`, {
       method: "POST",
       credentials: "include",
       headers: {
-        "Content-Type": "application/json",
         "Authorization": `JWT ${userContext.access}`
       },
-      body: JSON.stringify(gameData),
+      body: formData,
     })
       .then(async response => {
         if (!response.ok) {
@@ -105,6 +125,11 @@ const CreateGame = () => {
       })
   }
 
+  const getFileBinary = () => {
+    const selectedFile = document.getElementById("gameImageUpload").files[0];
+
+  }
+
   const submitQuestions = async(question) => {
     let gameData = {
       name: document.getElementById("gameTitleInput").value,
@@ -113,7 +138,6 @@ const CreateGame = () => {
       creator: idCookie.user,
     }
     const genericErrorMessage = "Something went wrong! Please try again later.";
-    console.log(questions);
     fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games/${gameId}/questions/`, {
       method: "POST",
       credentials: "include",
@@ -131,7 +155,6 @@ const CreateGame = () => {
             setError(data.description[0] || data.name[0] || data.category[0] || data.creator[0] || data.image[0] || genericErrorMessage);
         } else {
           let data = await response.json();
-          console.log(data);
           setError("");
           history.push(`/game/${gameId}`)
         }
@@ -154,10 +177,10 @@ const CreateGame = () => {
           <form id="gameDetailsForm" className={`flex flex-col h-full w-full justify-start items-center pt-2 ${gameDetailsCollapsed ? "hidden" : ""}`}>
             <input readOnly={gameId !== null} className="w-3/5 h-10 text-lg" id="gameTitleInput" type="text" placeholder="Title" maxlength="255"></input>
             <textarea readOnly={gameId !== null} className="w-3/5 h-1/3 mt-5 p-2" id="gameDescriptionText" placeholder="Description"></textarea>
-            {/* <fieldset className="flex flex-row w-3/5 my-4 border-2 border-aliceBlue rounded-md">
+            <fieldset className="flex flex-row w-3/5 my-4 border-2 border-aliceBlue rounded-md">
               <label className="text-spaceCadet mt-4 mr-2" htmlFor="gameImageUpload">Choose an image for the game (optional):</label>
               <input className="text-spaceCadet self-center my-2" id="gameImageUpload" name="gameImageUpload" type="file"/>
-            </fieldset> */}
+            </fieldset>
             <label className="text-aliceBlue mt-4 mr-2" htmlFor="categorySelect">Category</label>
             <select disabled={gameId !== null} id="categorySelect" name="categorySelect" className="w-2/5 rounded-md text-lg">
               <option value="science">Science</option>
@@ -245,7 +268,6 @@ const CreateGame = () => {
           <h1 className="text-md text-aliceBlue mt-4 lg:text-3xl md:text-2xl">Questions</h1>
         </div>
         {questions && questions.map((q,i) => {
-          console.log(q);
           return (
               <form id={`currentQuestionsForm${i}`} className="flex flex-col h-auto w-11/12 justify-center items-center border-2 rounded-md py-2 my-2">
                 <span className="flex flex-row w-full justify-center">

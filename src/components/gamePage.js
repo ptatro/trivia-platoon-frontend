@@ -4,6 +4,7 @@ import { useParams, useHistory } from "react-router";
 import { UserContext } from "../context/UserContext";
 
 const GamePage = (props) => {
+  const [firstRequestDone, setFirstRequestDone] = useState(false);
   const [gameDetailsCollapsed, setGameDetailsCollapsed] = useState(false);
   const [game, setGame] = useState(null);
   const {gameId} = useParams();
@@ -33,13 +34,16 @@ const GamePage = (props) => {
             setError(genericErrorMessage);
         } else {
           let data = await response.json();
+          console.log(data);
           setGame(data);
           setError("");
         }
+        setFirstRequestDone(true);
       })
       .catch(error => {
         //setIsSubmitting(false)
-        setError(genericErrorMessage)
+        setError(genericErrorMessage);
+        setFirstRequestDone(true);
       })
   }
 
@@ -58,7 +62,6 @@ const GamePage = (props) => {
             console.log(data);
         } else {
           let data = await response.json();
-          console.log(data);
           if(data.length > 0){
             setHasQuestions(true);
           }
@@ -71,7 +74,7 @@ const GamePage = (props) => {
   }
 
   useEffect(async () => {
-    if(!game){
+    if(!firstRequestDone){
       await getGame();
       if(userContext.access){getQuestions();}
     }
@@ -86,16 +89,15 @@ const GamePage = (props) => {
         </div>
         <div className="flex flex-col h-full w-full">
         {!hasQuestions && gameId && <h1 className="mt-4 text-lg text-red-600">This game has no questions added.</h1>}
+        
         {error && <h1 className="mt-4 text-lg text-red-600">{error}</h1>}
+          <div className="flex flex-row w-full">
+          {game && <img className="rounded-md m-2 max-w-sm" src={game.image}></img>}
           <form id="gameDetailsForm" className={`flex flex-col h-full w-full justify-start items-center pt-2 ${gameDetailsCollapsed ? "hidden" : ""}`}>
             <label className="text-aliceBlue mr-2" htmlFor="gameTitleInput">Title</label>
             <input disabled className="w-3/5 h-10 text-lg" id="gameTitleInput" type="text" placeholder="Title" maxlength="255" value={game ? game.name: ""}></input>
             <label className="text-aliceBlue mt-4 mr-2" htmlFor="gameDescriptionText">Description</label>
             <textarea disabled className="w-3/5 h-1/3 p-2" id="gameDescriptionText" placeholder="Description" value={game ? game.description : ""}></textarea>
-            {/* <fieldset className="flex flex-row w-3/5 my-4 border-2 border-aliceBlue rounded-md">
-              <label className="text-spaceCadet mt-4 mr-2" htmlFor="gameImageUpload">Choose an image for the game (optional):</label>
-              <input className="text-spaceCadet self-center my-2" id="gameImageUpload" name="gameImageUpload" type="file"/>
-            </fieldset> */}
             <label className="text-aliceBlue mt-4 mr-2" htmlFor="categorySelect">Category</label>
             <input disabled className="w-3/5 h-10 text-lg" id="gameCategoryText" type="text" value={game ? game.category : ""}></input>
             <div className="flex w-full items-center justify-center">
@@ -105,6 +107,7 @@ const GamePage = (props) => {
               </button>
             </div>
           </form>
+          </div>
         </div>
       </div>
     </div>

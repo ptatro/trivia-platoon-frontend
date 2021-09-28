@@ -4,7 +4,7 @@ import { useParams, useHistory } from "react-router";
 import { UserContext } from "../context/UserContext";
 
 const PlayGame = (props) => {
-  const [gameDetailsCollapsed, setGameDetailsCollapsed] = useState(false);
+  const [firstRequestDone, setFirstRequestDone] = useState(false);
   const [game, setGame] = useState(null);
   const {gameId} = useParams();
   const [error, setError] = useState("Error");
@@ -35,9 +35,11 @@ const PlayGame = (props) => {
           setGame(data);
           setError("");
         }
+        setFirstRequestDone(true);
       })
       .catch(error => {
-        setError(genericErrorMessage)
+        setError(genericErrorMessage);
+        setFirstRequestDone(true);
       })
   }
 
@@ -144,9 +146,9 @@ const PlayGame = (props) => {
     setCurrentQuestion(currentQuestion+1);
   }
 
-  useEffect(() => {
-    if(!game){
-      getGame();
+  useEffect(async () => {
+    if(!firstRequestDone){
+      await getGame();
       getQuestions();
     }
   }, [game, getGame, getQuestions]);

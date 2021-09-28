@@ -17,6 +17,7 @@ function App() {
   const [refreshCookie, setRefreshCookie, removeRefreshCookie] = useCookies(['refresh']);
 
   const verifyUser = useCallback(() => {
+    if(!refreshCookie.refresh){return;}
     fetch(`${process.env.REACT_APP_API_ENDPOINT}auth/token/refresh/`, {
       method: "POST",
       credentials: "include",

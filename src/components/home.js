@@ -23,20 +23,19 @@ const Home = (props) => {
             let data = await response.json();
             setError(genericErrorMessage);
             console.log(data);
-            setFirstRequestDone(false);
             setTimeout(getGames, 1 * 60 * 1000);
         } else {
           let data = await response.json();
           setGames(data);
           setError("");
-          setFirstRequestDone(true);
         }
+        setFirstRequestDone(true);
       })
       .catch(error => {
         //setIsSubmitting(false)
         setError(genericErrorMessage)
         console.log(error);
-        setFirstRequestDone(false);
+        setFirstRequestDone(true);
         setTimeout(getGames, 1 * 60 * 1000);
       })
   }
@@ -65,7 +64,7 @@ const Home = (props) => {
           <h2 className="justify-self-start ml-5 text-xl">{i + 1}</h2>
           <h2 className="justify-self-start ml-5 text-xl">{g.name}</h2>
           <h2 className="justify-self-start ml-5 text-xl">{g.category}</h2>
-          <h2 className="justify-self-start ml-5 text-xl">Rating</h2>
+          <h2 className="justify-self-start ml-5 text-xl">{g.rating_count ? Number(g.rating_total)/Number(g.rating_count) : "No Ratings"}</h2>
         </div>
         })}
       </div>

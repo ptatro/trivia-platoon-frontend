@@ -26,11 +26,10 @@ const Profile = (props) => {
             let data = await response.json();
             setError(genericErrorMessage);
             console.log(data);
-            setFirstRequestDone(false);
+            setFirstRequestDone(true);
             setTimeout(getUserGames, 1 * 60 * 1000);
         } else {
           let data = await response.json();
-          console.log(data);
           setGames(data);
           setError("");
           setFirstRequestDone(true);
@@ -39,7 +38,7 @@ const Profile = (props) => {
       .catch(error => {
         setError(genericErrorMessage)
         console.log(error);
-        setFirstRequestDone(false);
+        setFirstRequestDone(true);
         setTimeout(getUserGames, 1 * 60 * 1000);
       })
   }
@@ -69,7 +68,7 @@ const Profile = (props) => {
           <h2 className="justify-self-start ml-5 text-xl">{i + 1}</h2>
           <h2 className="justify-self-start ml-5 text-xl">{g.name}</h2>
           <h2 className="justify-self-start ml-5 text-xl">{g.category}</h2>
-          <h2 className="justify-self-start ml-5 text-xl">{Number(g.rating) === 0 ? g.rating : "None"}</h2>
+          <h2 className="justify-self-start ml-5 text-xl">{g.rating_count ? Number(g.rating_total)/Number(g.rating_count) : "No Ratings"}</h2>
         </div>
         })}
       </div>
