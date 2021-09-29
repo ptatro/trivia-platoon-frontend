@@ -29,13 +29,14 @@ const Register = (props) => {
         setIsSubmitting(false)
         if (!response.ok) {
             let data = await response.json();
-            setError(data.username[0] || data.email[0] || data.password[0] || genericErrorMessage);
+            setError((data.username && data.username) || (data.email && data.email[0]) || (data.password && data.password[0]) || genericErrorMessage);
             console.log(data);
         } else {
           history.push("/login");
         }
       })
       .catch(error => {
+        console.log(error);
         setIsSubmitting(false)
         setError(genericErrorMessage)
       })
