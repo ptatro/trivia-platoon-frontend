@@ -11,6 +11,7 @@ import CreateGame from './components/createGame';
 import GamePage from './components/gamePage';
 import PlayGame from './components/playGame';
 import Profile from './components/userProfile';
+import EditGame from './components/editGame';
 
 function App() {
   const [userContext, setUserContext] = useContext(UserContext);
@@ -53,6 +54,7 @@ function App() {
           <Route exact path="/" component={Home}/>
           <Route exact path="/game/:gameId" component={GamePage}/>
           {refreshCookie.refresh && <Route exact path="/play/:gameId" component={PlayGame}/>}
+          {refreshCookie.refresh && <Route exact path="/edit/:gameId" component={EditGame}/>}
           {refreshCookie.refresh && <Route exact path="/creategame" component={CreateGame}/>}
           {refreshCookie.refresh && <Route exact path="/profile/:profileUserId" component={Profile}/>}
           {!refreshCookie.refresh && <Route exact path="/register" component={Register}/>}

@@ -7,6 +7,7 @@ const GamePage = (props) => {
   const [firstRequestDone, setFirstRequestDone] = useState(false);
   const [gameDetailsCollapsed, setGameDetailsCollapsed] = useState(false);
   const [game, setGame] = useState(null);
+  const [results, setResults] = useState([]);
   const {gameId} = useParams();
   const [error, setError] = useState("");
   const history = useHistory();
@@ -31,10 +32,10 @@ const GamePage = (props) => {
         //setIsSubmitting(false)
         if (!response.ok) {
             let data = await response.json();
+            console.log(data);
             setError(genericErrorMessage);
         } else {
           let data = await response.json();
-          console.log(data);
           setGame(data);
           setError("");
         }
@@ -73,10 +74,38 @@ const GamePage = (props) => {
       })
   }
 
+  const getResults = () => {
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games/${gameId}/results/`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `JWT ${userContext.access}`
+      },
+    })
+      .then(async response => {
+        if (!response.ok) {
+            let data = await response.json();
+            console.log(data);
+        } else {
+          let data = await response.json();
+          console.log(data);
+          setResults(data);
+          setError("");
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      })
+  }
+
   useEffect(async () => {
     if(!firstRequestDone){
       await getGame();
-      if(userContext.access){getQuestions();}
+      if(game){
+        getResults();
+      }
+      if(userContext.access && game){getQuestions();}
     }
   }, [game, getGame, getQuestions]);
 
@@ -108,6 +137,19 @@ const GamePage = (props) => {
             </div>
           </form>
           </div>
+        </div>
+      </div>
+      <div className="flex flex-col w-4/5 h-auto bg-manatee rounded-lg mt-10">
+        <div className="h-16 bg-imperialRed">
+          <h1 className="text-md text-aliceBlue mt-4 lg:text-3xl md:text-2xl">Leaderboard</h1>
+        </div>
+        <div className="h-full w-full flex flex-col items-center overflow-auto">
+          {results && results.map((r,i) => {
+            return <div className="transition-all h-11/12 w-6/12 grid grid-cols-2 bg-aliceBlue rounded-md mt-4 hover:bg-gray-400">
+              <h2 className="justify-self-start ml-5 text-xl">{r.player}</h2>
+              <h2 className="justify-self-start ml-5 text-xl">{r.score}</h2>
+            </div>
+            })}
         </div>
       </div>
     </div>

@@ -10,7 +10,7 @@ const Home = (props) => {
 
   const getGames = async() => {
     const genericErrorMessage = "Something went wrong! Please try again later."
-    fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games/`, {
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games`, {
       method: "GET",
       //credentials: "include",
       headers: {

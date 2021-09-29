@@ -1,19 +1,48 @@
-import React, { useContext, useState } from "react"
+import React, { useContext, useState, useEffect } from "react"
 import { useCookies } from "react-cookie"
 import { UserContext } from "../context/UserContext";
-import { useHistory } from "react-router";
+import { useHistory, useParams } from "react-router";
 
-const CreateGame = () => {
+const EditGame = () => {
   const [tokenCookie, setTokenCookie, removeTokenCookie] = useCookies(['token']);
+  const [firstRequestDone, setFirstRequestDone] = useState(false);
+  const [game, setGame] = useState(null);
   const [idCookie, setIdCookie, removeIdCookie] = useCookies(['user']);
   const [error, setError] = useState("")
-  const [gameId, setGameId] = useState(null);
+  const {gameId} = useParams();
   const [gameDetails, setGameDetails] = useState(null);
   const [questions, setQuestions] = useState([]);
+  const [newQuestions, setNewQuestions] = useState([]);
   const [questionType, setQuestionType] = useState("");
   const [gameDetailsCollapsed, setGameDetailsCollapsed] = useState(false);
   const [userContext, setUserContext] = useContext(UserContext);
   const history = useHistory();
+  const genericErrorMessage = "Something went wrong! Please try again later.";
+
+  const getGame = async() => {
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games/${gameId}/`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then(async response => {
+        if (!response.ok) {
+            let data = await response.json();
+            setError(genericErrorMessage);
+        } else {
+          let data = await response.json();
+          setGame(data);
+          //document.getElementById("gameTitleInput").value = data.name;
+          setError("");
+        }
+        setFirstRequestDone(true);
+      })
+      .catch(error => {
+        setError(genericErrorMessage);
+        setFirstRequestDone(true);
+      })
+  }
 
   const addQuestion = () => {
     let questionData = {
@@ -46,12 +75,31 @@ const CreateGame = () => {
     }
     if(questionData.answers.length < 2){return;}
     clearQuestionFields();
-    setQuestions([...questions, questionData]);
+    setNewQuestions([...newQuestions, questionData]);
+  }
+
+  const deleteOldQuestion = (q) => {
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games/${game.id}/questions/${q.id}/`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `JWT ${userContext.access}`
+      },
+    })
+      .then(async response => {
+        if (!response.ok) {
+            let data = await response.json();
+            setError(genericErrorMessage);
+            console.log(data);
+        }})
+      .catch(error => {
+        setError(genericErrorMessage)
+        console.log(error);
+      })
   }
 
   const clearGame = () => {
-    setGameId(null);
-    setQuestions([]);
+    setNewQuestions([]);
     document.getElementById("gameTitleInput").value = "";
     document.getElementById("gameDescriptionText").value = "";
     document.getElementById("questionTextArea").value = "";
@@ -76,9 +124,9 @@ const CreateGame = () => {
   }
 
   const removeQuestion = (i) => {
-    let newQuestions = [...questions];
-    newQuestions.splice(i,1);
-    setQuestions(newQuestions);
+    let questionsRemoved = [...newQuestions];
+    questionsRemoved.splice(i,1);
+    setNewQuestions(questionsRemoved);
   }
 
   const submitGame = async() => {
@@ -88,13 +136,14 @@ const CreateGame = () => {
     formData.append("category", document.getElementById("categorySelect").value);
     formData.append("creator", idCookie.user);
 
+
     if(document.getElementById("gameImageUpload").files[0]){
       //gameData.image = document.getElementById("gameImageUpload").files[0];
       formData.append("image", document.getElementById("gameImageUpload").files[0]);
     }
     const genericErrorMessage = "Something went wrong! Please try again later."
-    fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games/`, {
-      method: "POST",
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games/${gameId}/`, {
+      method: "PUT",
       credentials: "include",
       headers: {
         "Authorization": `JWT ${userContext.access}`
@@ -108,7 +157,6 @@ const CreateGame = () => {
             setError(data.description[0] || data.name[0] || data.category[0] || data.creator[0] || data.image[0] || genericErrorMessage);
         } else {
           let data = await response.json();
-          setGameId(data.id);
           setGameDetails(data);
           setError("");
         }
@@ -118,9 +166,30 @@ const CreateGame = () => {
       })
   }
 
-  const getFileBinary = () => {
-    const selectedFile = document.getElementById("gameImageUpload").files[0];
-
+  const getQuestions = async() => {
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games/${gameId}/questions/`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `JWT ${userContext.access}`
+      },
+    })
+      .then(async response => {
+        if (!response.ok) {
+            let data = await response.json();
+            setError(genericErrorMessage);
+        } else {
+          let data = await response.json();
+          console.log(data);
+          setQuestions(data);
+          setNewQuestions(data);
+          setError("");
+        }
+      })
+      .catch(error => {
+        setError(genericErrorMessage)
+      })
   }
 
   const submitQuestions = async(question) => {
@@ -158,24 +227,34 @@ const CreateGame = () => {
       });
   }
 
+  useEffect(async () => {
+    if(!firstRequestDone){
+      await getGame();
+      if(game){
+        getQuestions();
+      }
+    }
+  }, [game, getGame, getQuestions]);
+
+
   return (
     <div className="flex flex-col items-center justify-start w-full h-full overflow-auto">
       <div className={gameDetailsCollapsed ? "transition-all duration-300 flex flex-col w-4/5 h-0 bg-manatee rounded-b-lg" :
         "transition-all duration-300 flex flex-col w-4/5 h-auto bg-manatee rounded-b-lg"}>
         <div className="flex h-auto bg-imperialRed overflow-hidden items-center justify-center">
-          <h1 className="text-md text-aliceBlue my-2 lg:text-3xl md:text-2xl">Create A Game</h1>
+          <h1 className="text-md text-aliceBlue my-2 lg:text-3xl md:text-2xl">Edit Game</h1>
         </div>
         <div className="flex flex-col h-full w-full">
         {error && <h1 className="mt-4 text-lg text-red-600">{error}</h1>}
           <form id="gameDetailsForm" className={`flex flex-col h-full w-full justify-start items-center pt-2 ${gameDetailsCollapsed ? "hidden" : ""}`}>
-            <input readOnly={gameId !== null} className="w-3/5 h-10 text-lg" id="gameTitleInput" type="text" placeholder="Title" maxlength="255"></input>
-            <textarea readOnly={gameId !== null} className="w-3/5 h-1/3 mt-5 p-2" id="gameDescriptionText" placeholder="Description"></textarea>
+            <input className="w-3/5 h-10 text-lg" id="gameTitleInput" type="text" placeholder="Title" maxlength="255" defaultValue={game ? game.name : ""}></input>
+            <textarea className="w-3/5 h-1/3 mt-5 p-2" id="gameDescriptionText" placeholder="Description" defaultValue={game ? game.description : ""}></textarea>
             <fieldset className="flex flex-row w-3/5 my-4 border-2 border-aliceBlue rounded-md">
               <label className="text-spaceCadet mt-4 mr-2" htmlFor="gameImageUpload">Choose an image for the game (optional):</label>
               <input className="text-spaceCadet self-center my-2" id="gameImageUpload" name="gameImageUpload" type="file"/>
             </fieldset>
-            <label className="text-aliceBlue mt-4 mr-2" htmlFor="categorySelect">Category</label>
-            <select disabled={gameId !== null} id="categorySelect" name="categorySelect" className="w-2/5 rounded-md text-lg">
+            <label className="text-aliceBlue mt-4 mr-2" htmlFor="categorySelect" defaultValue={game ? game.category : ""}>Category</label>
+            <select id="categorySelect" name="categorySelect" className="w-2/5 rounded-md text-lg">
               <option value="science">Science</option>
               <option value="art">Art</option>
               <option value="comics">Comics</option>
@@ -183,16 +262,6 @@ const CreateGame = () => {
               <option value="tv-movies">TV/Movies</option>
               <option value="other">Other</option>
             </select>
-            <div className="flex w-full items-center justify-center">
-              <button hidden={gameId !== null} className="transition-all duration-300 bg-aliceBlue w-1/5 h-8 my-4 rounded-md self-center hover:bg-gray-300 mr-2"
-                onClick={(e) => {submitGame(); e.preventDefault();}}>
-                Submit
-              </button>
-              <button className="transition-all duration-300 bg-aliceBlue w-1/5 h-8 my-4 rounded-md self-center hover:bg-gray-300 ml-2"
-                onClick={(e) => {clearGame(); e.preventDefault();}}>
-                Reset
-              </button>
-            </div>
           </form>
         </div>
       </div>
@@ -208,7 +277,7 @@ const CreateGame = () => {
         </div>
         <form id="questionEntryForm" className="flex flex-col h-auto w-11/12 justify-center items-center border-2 rounded-md py-2 my-2">
           <span className="flex flex-row w-full justify-center">
-            <h2 className="mr-4 text-lg">{questions.length+1}</h2>
+            <h2 className="mr-4 text-lg">{newQuestions.length+1}</h2>
             <textarea id="questionTextArea" className="w-11/12 rounded-md p-1" placeholder="Question Text"></textarea>
           </span>
           <label className="text-aliceBlue mt-4 mr-2 text-lg" htmlFor="questionTypeSelect">Category</label>
@@ -254,13 +323,13 @@ const CreateGame = () => {
           }
         </form>
       </div>
-      { questions.length > 0 &&
+      { newQuestions.length > 0 &&
       <div id="currentQuestionsDiv" className={ gameId ? "transition-all duration-500 flex flex-col w-4/5 h-auto bg-manatee rounded-lg my-4 overflow-auto items-center overflow-auto" :
       "transition-all duration-500 flex flex-col w-4/5 h-0 bg-manatee rounded-lg my-4 overflow-auto"}>
         <div className="h-16 bg-imperialRed w-full mb-2">
           <h1 className="text-md text-aliceBlue mt-4 lg:text-3xl md:text-2xl">Questions</h1>
         </div>
-        {questions && questions.map((q,i) => {
+        {newQuestions && newQuestions.map((q,i) => {
           return (
               <form id={`currentQuestionsForm${i}`} className="flex flex-col h-auto w-11/12 justify-center items-center border-2 rounded-md py-2 my-2">
                 <span className="flex flex-row w-full justify-center">
@@ -308,11 +377,15 @@ const CreateGame = () => {
         })}
       </div>
       }
-      {questions.length >= 3 && 
+      {newQuestions.length >= 3 && 
         <button className="transition-all duration-300 text-xl border-2 border-spaceCadet bg-aliceBlue w-1/5 h-10 mt-2 mb-10 rounded-md self-center hover:bg-gray-300 mr-2"
           onClick={(e) => {
             for(let i = 0; i < questions.length; i++){
-              submitQuestions(questions[i]);
+              deleteOldQuestion(questions[i]);
+            }
+            submitGame();
+            for(let i = 0; i < newQuestions.length; i++){
+              submitQuestions(newQuestions[i]);
             }
             e.preventDefault();
             }}>
@@ -323,4 +396,4 @@ const CreateGame = () => {
   );
 }
 
-export default CreateGame
+export default EditGame;
