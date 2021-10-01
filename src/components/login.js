@@ -28,8 +28,9 @@ const Login = () => {
       .then(async response => {
         setIsSubmitting(false)
         if (!response.ok) {
-            setError(genericErrorMessage)
-            console.log(await response.json());
+          let data = await response.json();
+            setError(data.detail || genericErrorMessage)
+            console.log(data);
         } else {
           const data = await response.json();
           let user_id = jwt_decode(data.access).user_id;

@@ -87,8 +87,16 @@ const Profile = (props) => {
       <div className="h-full w-full flex flex-col items-center overflow-auto">
         {!games && firstRequestDone && 
         <h2>This user doesn't have any games created.</h2>}
+        {games && 
+        <div className="transition-all h-11/12 w-11/12 grid grid-cols-4 text-aliceBlue mt-4">
+          <h2 className="justify-self-start ml-5 text-xl">#</h2>
+          <h2 className="justify-self-start ml-5 text-xl">Name</h2>
+          <h2 className="justify-self-start ml-5 text-xl">Category</h2>
+          <h2 className="justify-self-start ml-5 text-xl">Avg Rating</h2>
+        </div>
+        }
         {games && games.map((g,i) => {
-        return <div className="transition-all h-11/12 w-11/12 grid grid-cols-4 bg-aliceBlue rounded-md mt-4 hover:bg-gray-400" onClick={() => {
+        return <div className="transition-all h-11/12 w-11/12 grid grid-cols-4 bg-aliceBlue rounded-md my-2 hover:bg-gray-400" onClick={() => {
           let newGames = games.slice();
           for(let gNum = 0; gNum < newGames.length; gNum++){
             newGames[gNum].expand = false;
@@ -99,7 +107,7 @@ const Profile = (props) => {
           <h2 className="justify-self-start ml-5 text-xl">{i + 1}</h2>
           <h2 className="justify-self-start ml-5 text-xl">{g.name}</h2>
           <h2 className="justify-self-start ml-5 text-xl">{g.category}</h2>
-          <h2 className="justify-self-start ml-5 text-xl">{g.rating_count ? Number(g.rating_total)/Number(g.rating_count) : "No Ratings"}</h2>
+          <h2 className="justify-self-start ml-5 text-xl">{g.rating_count ? Math.round((Number(g.rating_total)/Number(g.rating_count))*10)/10 : "No Ratings"}</h2>
           {g.expand &&
           <div className="flex-row w-full col-span-4">
             <button className=" transition-all duration-300 bg-gray-400 w-1/4 h-8 my-4 rounded-md self-center mr-2 hover:bg-gray-300 disabled:opacity-50" onClick={() => history.push(`/game/${g.id}/`)}>

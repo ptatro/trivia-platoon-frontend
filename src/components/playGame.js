@@ -58,7 +58,6 @@ const PlayGame = (props) => {
             setError(genericErrorMessage);
         } else {
           let data = await response.json();
-          console.log(data);
           setQuestions(data);
           setError("");
         }
@@ -120,7 +119,6 @@ const PlayGame = (props) => {
           setError(genericErrorMessage);
       } else {
         let data = await response.json();
-        console.log(data);
         setError("");
         setRatingSubmitted(true);
       }
@@ -149,7 +147,9 @@ const PlayGame = (props) => {
   useEffect(async () => {
     if(!firstRequestDone){
       await getGame();
-      getQuestions();
+      if(game && questions.length === 0){
+        await getQuestions();
+      }
     }
   }, [game, getGame, getQuestions]);
 

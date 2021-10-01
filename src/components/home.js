@@ -59,12 +59,18 @@ const Home = (props) => {
     <div className="flex flex-col w-4/5 h-3/5 bg-manatee rounded-lg mt-10 items-center overflow-auto">
       <div className="h-16 w-full bg-imperialRed overflow-hidden justify-center"><h1 className="text-md text-aliceBlue mt-4 lg:text-3xl md:text-2xl">Game List</h1></div>
       <div className="h-full w-full flex flex-col items-center overflow-auto">
+        <div className="transition-all h-11/12 w-11/12 grid grid-cols-4 text-aliceBlue mt-4">
+            <h2 className="justify-self-start ml-5 text-xl">#</h2>
+            <h2 className="justify-self-start ml-5 text-xl">Name</h2>
+            <h2 className="justify-self-start ml-5 text-xl">Category</h2>
+            <h2 className="justify-self-start ml-5 text-xl">Avg Rating</h2>
+          </div>
         {games && games.map((g,i) => {
-        return <div className="transition-all h-11/12 w-11/12 grid grid-cols-4 bg-aliceBlue rounded-md mt-4 hover:bg-gray-400" onClick={() => history.push(`/game/${g.id}`)}>
+        return <div className="transition-all h-11/12 w-11/12 grid grid-cols-4 bg-aliceBlue rounded-md my-2 hover:bg-gray-400" onClick={() => history.push(`/game/${g.id}`)}>
           <h2 className="justify-self-start ml-5 text-xl">{i + 1}</h2>
           <h2 className="justify-self-start ml-5 text-xl">{g.name}</h2>
           <h2 className="justify-self-start ml-5 text-xl">{g.category}</h2>
-          <h2 className="justify-self-start ml-5 text-xl">{g.rating_count ? Number(g.rating_total)/Number(g.rating_count) : "No Ratings"}</h2>
+          <h2 className="justify-self-start ml-5 text-xl">{g.rating_count ? Math.round((Number(g.rating_total)/Number(g.rating_count))*10)/10 : "No Ratings"}</h2>
         </div>
         })}
       </div>
