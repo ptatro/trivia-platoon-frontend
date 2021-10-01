@@ -5,6 +5,7 @@ import { UserContext } from "../context/UserContext";
 
 const PlayGame = (props) => {
   const [firstRequestDone, setFirstRequestDone] = useState(false);
+  const [questionRequestDone, setQuestionRequestDone] = useState(false);
   const [game, setGame] = useState(null);
   const {gameId} = useParams();
   const [error, setError] = useState("Error");
@@ -16,10 +17,12 @@ const PlayGame = (props) => {
   const [selectedRating, setSelectedRating] = useState(0);
   const [ratingSubmitted, setRatingSubmitted] = useState(false);
   const [resultsId, setResultsId] = useState(null);
-  const [cookies, setCookie, removeCookie] = useCookies(['user']);
+  const [cookies, setCookie, removeCookie] = useCookies(['user', 'refresh', 'username']);
   const genericErrorMessage = "Something went wrong! Please try again later.";
 
   const restart = () => {
+    setFirstRequestDone(false);
+    setQuestionRequestDone(false);
     setSelectedRating(0);
     setRatingSubmitted(false);
     setGame(null);
@@ -27,7 +30,6 @@ const PlayGame = (props) => {
     setCurrentQuestion(0);
     setScore(0);
     setResultsId(null);
-    setFirstRequestDone(false);
   }
 
   const getGame = async() => {
@@ -73,9 +75,11 @@ const PlayGame = (props) => {
           setQuestions(data);
           setError("");
         }
+        setQuestionRequestDone(true);
       })
       .catch(error => {
-        setError(genericErrorMessage)
+        setError(genericErrorMessage);
+        setQuestionRequestDone(true);
       })
   }
 
@@ -157,11 +161,11 @@ const PlayGame = (props) => {
   useEffect(async () => {
     if(!firstRequestDone){
       await getGame();
-      if(game && questions.length === 0){
+      if(game && !questionRequestDone && userContext.access){
         await getQuestions();
       }
     }
-  }, [game, getGame, getQuestions]);
+  }, [game, getGame, getQuestions, userContext]);
 
   return (
     <div className="flex flex-col items-center justify-start w-full h-full overflow-auto">
@@ -193,7 +197,7 @@ const PlayGame = (props) => {
                 <label type="text" htmlFor="answerRadio3" id="answerText3" className="w-4/5 h-10 text-lg">{questions[currentQuestion].answers[3].text}</label>
               </span>}
         </div>}
-        { currentQuestion === questions.length && firstRequestDone &&(
+        { currentQuestion === questions.length && firstRequestDone && questionRequestDone && (
             <div id="answersDiv"className="flex flex-col bg-gray-300 items-center justify-start rounded-md px-4 py-2 w-11/12 h-3/5 mt-10">
               <h2 className="text-3xl">{`${score} correct out of ${questions.length}!`}</h2>
               <h2 className="text-xl mt-10">{ratingSubmitted ? "Rating submitted!" : "Would you like to rate this quiz?"}</h2>

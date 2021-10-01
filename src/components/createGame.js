@@ -56,6 +56,7 @@ const CreateGame = () => {
     document.getElementById("gameDescriptionText").value = "";
     document.getElementById("questionTextArea").value = "";
     document.getElementById("typeSelectBlank").selected = true;
+    document.getElementById("gameImageUpload").files = [];
     setQuestionType("");
   }
 
@@ -116,11 +117,6 @@ const CreateGame = () => {
       .catch(error => {
         setError(genericErrorMessage)
       })
-  }
-
-  const getFileBinary = () => {
-    const selectedFile = document.getElementById("gameImageUpload").files[0];
-
   }
 
   const submitQuestions = async(question) => {

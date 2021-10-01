@@ -11,7 +11,7 @@ const Login = () => {
   const [password, setPassword] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState("")
-  const [cookies, setCookie, removeCookie] = useCookies(['refresh']);
+  const [cookies, setCookie, removeCookie] = useCookies(['refresh', 'user', 'username']);
 
   const formSubmitHandler = e => {
     
@@ -34,9 +34,9 @@ const Login = () => {
         } else {
           const data = await response.json();
           let user_id = jwt_decode(data.access).user_id;
-          setCookie("refresh", data.refresh);
-          setCookie("user", user_id);
-          setCookie("username", username);
+          setCookie("refresh", data.refresh, {path:"/"});
+          setCookie("user", user_id, {path:"/"});
+          setCookie("username", username, {path:"/"});
           setUserContext((oldContext) => {return {...oldContext, access:data.access}});
           history.push("/");
         }

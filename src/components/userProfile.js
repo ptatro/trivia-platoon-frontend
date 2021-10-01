@@ -6,7 +6,7 @@ import { useCookies } from "react-cookie"
 
 const Profile = (props) => {
   const [userContext, setUserContext] = useContext(UserContext);
-  const [idCookie, setIdCookie, removeIdCookie] = useCookies(['user']);
+  const [cookies, setCookies, removeCookies] = useCookies(['refresh', 'user', 'username']);
   const { profileUserId } = useParams();
   const [games, setGames] = useState([]);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
@@ -110,9 +110,9 @@ const Profile = (props) => {
           <h2 className="justify-self-start ml-5 text-xl">{g.rating_count ? Math.round((Number(g.rating_total)/Number(g.rating_count))*10)/10 : "No Ratings"}</h2>
           {g.expand &&
           <div className="flex-row w-full col-span-4">
-            <button className=" transition-all duration-300 bg-gray-400 w-1/4 h-8 my-4 rounded-md self-center mr-2 hover:bg-gray-300 disabled:opacity-50" onClick={() => history.push(`/game/${g.id}/`)}>
+            <button className=" transition-all duration-300 bg-gray-400 w-1/4 h-8 my-4 rounded-md self-center mr-2 hover:bg-gray-300 disabled:opacity-50" onClick={() => history.push(`/game/${g.id}`)}>
               Play</button>
-            <button className=" transition-all duration-300 bg-gray-400 w-1/4 h-8 my-4 rounded-md self-center mr-2 hover:bg-gray-300 disabled:opacity-50" onClick={() => history.push(`/edit/${g.id}/`)}>
+            <button className=" transition-all duration-300 bg-gray-400 w-1/4 h-8 my-4 rounded-md self-center mr-2 hover:bg-gray-300 disabled:opacity-50" onClick={() => history.push(`/edit/${g.id}`)}>
               Edit</button>
             <button className=" transition-all duration-300 bg-gray-400 w-1/4 h-8 my-4 rounded-md self-center mr-2 hover:bg-gray-300 disabled:opacity-50" onClick={() => deleteGame(g)}>
               Delete</button>

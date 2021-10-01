@@ -15,7 +15,7 @@ const Navbar = (props) => {
     setIsCollapsed(!isCollapsed);
   }
 
-  const logOutHandler = () => {
+  const logOutHandler = async () => {
     removeCookies("refresh", {path:"/"});
     removeCookies("user", {path:"/"});
     removeCookies("username", {path:"/"});

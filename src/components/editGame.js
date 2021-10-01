@@ -6,6 +6,7 @@ import { useHistory, useParams } from "react-router";
 const EditGame = () => {
   const [tokenCookie, setTokenCookie, removeTokenCookie] = useCookies(['token']);
   const [firstRequestDone, setFirstRequestDone] = useState(false);
+  const [questionRequestDone, setQuestionRequestDone] = useState(false);
   const [game, setGame] = useState(null);
   const [idCookie, setIdCookie, removeIdCookie] = useCookies(['user']);
   const [error, setError] = useState("")
@@ -110,10 +111,10 @@ const EditGame = () => {
   const clearQuestionFields = () => {
     document.getElementById("questionTextArea").value = "";
     if(questionType === "multipleChoice"){
-      document.getElementById("mcInput0").value = "";
       document.getElementById("mcInput1").value = "";
       document.getElementById("mcInput2").value = "";
       document.getElementById("mcInput3").value = "";
+      document.getElementById("mcInput4").value = "";
     }
   }
 
@@ -186,9 +187,11 @@ const EditGame = () => {
           setNewQuestions(data);
           setError("");
         }
+        setQuestionRequestDone(true);
       })
       .catch(error => {
-        setError(genericErrorMessage)
+        setError(genericErrorMessage);
+        setQuestionRequestDone(true);
       })
   }
 
@@ -230,11 +233,11 @@ const EditGame = () => {
   useEffect(async () => {
     if(!firstRequestDone){
       await getGame();
-      if(game){
+      if(game && userContext.access && !questionRequestDone){
         getQuestions();
       }
     }
-  }, [game, getGame, getQuestions]);
+  }, [game, getGame, getQuestions, userContext, questionRequestDone]);
 
 
   return (
@@ -246,6 +249,8 @@ const EditGame = () => {
         </div>
         <div className="flex flex-col h-full w-full">
         {error && <h1 className="mt-4 text-lg text-red-600">{error}</h1>}
+        <div className="flex flex-row w-full">
+        {game && <img className="rounded-md m-2 max-w-sm" src={game.image}></img>}
           <form id="gameDetailsForm" className={`flex flex-col h-full w-full justify-start items-center pt-2 ${gameDetailsCollapsed ? "hidden" : ""}`}>
             <input className="w-3/5 h-10 text-lg" id="gameTitleInput" type="text" placeholder="Title" maxlength="255" defaultValue={game ? game.name : ""}></input>
             <textarea className="w-3/5 h-1/3 mt-5 p-2" id="gameDescriptionText" placeholder="Description" defaultValue={game ? game.description : ""}></textarea>
@@ -263,6 +268,7 @@ const EditGame = () => {
               <option value="other">Other</option>
             </select>
           </form>
+        </div>
         </div>
       </div>
       <div className="flex w-11 border-1 border-black rounded-b-md bg-manatee h-8 items-center justify-center">

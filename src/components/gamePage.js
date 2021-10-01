@@ -1,10 +1,10 @@
-import React, { useContext, useEffect, useState } from "react"
-import { useCookies } from "react-cookie"
+import React, { useContext, useEffect, useState } from "react";
 import { useParams, useHistory } from "react-router";
 import { UserContext } from "../context/UserContext";
 
 const GamePage = (props) => {
   const [firstRequestDone, setFirstRequestDone] = useState(false);
+  const [questionRequestDone, setQuestionRequestDone] = useState(false);
   const [gameDetailsCollapsed, setGameDetailsCollapsed] = useState(false);
   const [game, setGame] = useState(null);
   const [results, setResults] = useState([]);
@@ -22,7 +22,7 @@ const GamePage = (props) => {
 
   const getGame = async() => {
     const genericErrorMessage = "Something went wrong! Please try again later."
-    fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games/${gameId}/`, {
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games/${gameId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -68,9 +68,11 @@ const GamePage = (props) => {
           }
           setError("");
         }
+        setQuestionRequestDone(true);
       })
       .catch(error => {
         console.log(error);
+        setQuestionRequestDone(true);
       })
   }
 
@@ -89,7 +91,6 @@ const GamePage = (props) => {
             console.log(data);
         } else {
           let data = await response.json();
-          console.log(data);
           setResults(data);
           setError("");
         }
@@ -105,9 +106,9 @@ const GamePage = (props) => {
       if(game){
         getResults();
       }
-      if(userContext.access && game){getQuestions();}
+      if(userContext.access && game && !questionRequestDone){getQuestions();}
     }
-  }, [game, getGame, getQuestions]);
+  }, [game, getGame, getQuestions, userContext, questionRequestDone]);
 
   return (
     <div className="flex flex-col items-center justify-start w-full h-full overflow-auto">
@@ -117,7 +118,7 @@ const GamePage = (props) => {
           <h1 className="text-md text-aliceBlue mt-4 lg:text-3xl md:text-2xl">{game ? game.name : ""}</h1>
         </div>
         <div className="flex flex-col h-full w-full">
-        {!hasQuestions && gameId && firstRequestDone && <h1 className="mt-4 text-lg text-red-600">This game has no questions added.</h1>}
+        {!hasQuestions && gameId && firstRequestDone && questionRequestDone &&<h1 className="mt-4 text-lg text-red-600">This game has no questions added.</h1>}
         
         {error && <h1 className="mt-4 text-lg text-red-600">{error}</h1>}
           <div className="flex flex-row w-full">
