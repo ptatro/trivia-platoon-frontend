@@ -117,7 +117,7 @@ const GamePage = (props) => {
           <h1 className="text-md text-aliceBlue mt-4 lg:text-3xl md:text-2xl">{game ? game.name : ""}</h1>
         </div>
         <div className="flex flex-col h-full w-full">
-        {!hasQuestions && gameId && <h1 className="mt-4 text-lg text-red-600">This game has no questions added.</h1>}
+        {!hasQuestions && gameId && firstRequestDone && <h1 className="mt-4 text-lg text-red-600">This game has no questions added.</h1>}
         
         {error && <h1 className="mt-4 text-lg text-red-600">{error}</h1>}
           <div className="flex flex-row w-full">

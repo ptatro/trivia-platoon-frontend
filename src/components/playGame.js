@@ -44,12 +44,14 @@ const PlayGame = (props) => {
   }
 
   const getQuestions = async() => {
+    let authString = `JWT ${userContext.access}`;
+    console.log(authString);
     fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games/${gameId}/questions/`, {
       method: "GET",
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `JWT ${userContext.access}`
+        "Authorization": authString
       },
     })
       .then(async response => {
@@ -183,7 +185,7 @@ const PlayGame = (props) => {
                 <label type="text" htmlFor="answerRadio3" id="answerText3" className="w-4/5 h-10 text-lg">{questions[currentQuestion].answers[3].text}</label>
               </span>}
         </div>}
-        { currentQuestion === questions.length &&(
+        { currentQuestion === questions.length && firstRequestDone &&(
             <div id="answersDiv"className="flex flex-col bg-gray-300 items-center justify-start rounded-md px-4 py-2 w-11/12 h-3/5 mt-10">
               <h2 className="text-3xl">{`${score} correct out of ${questions.length}!`}</h2>
               <h2 className="text-xl mt-10">{ratingSubmitted ? "Rating submitted!" : "Would you like to rate this quiz?"}</h2>
