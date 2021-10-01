@@ -19,6 +19,17 @@ const PlayGame = (props) => {
   const [cookies, setCookie, removeCookie] = useCookies(['user']);
   const genericErrorMessage = "Something went wrong! Please try again later.";
 
+  const restart = () => {
+    setSelectedRating(0);
+    setRatingSubmitted(false);
+    setGame(null);
+    setQuestions([]);
+    setCurrentQuestion(0);
+    setScore(0);
+    setResultsId(null);
+    setFirstRequestDone(false);
+  }
+
   const getGame = async() => {
     fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games/${gameId}/`, {
       method: "GET",
@@ -45,7 +56,6 @@ const PlayGame = (props) => {
 
   const getQuestions = async() => {
     let authString = `JWT ${userContext.access}`;
-    console.log(authString);
     fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games/${gameId}/questions/`, {
       method: "GET",
       credentials: "include",
@@ -72,8 +82,6 @@ const PlayGame = (props) => {
   const submitResult = async() => {
     const result = {      score: score,
       player: cookies.user,
-
-      player: cookies.user
     }
     fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games/${gameId}/results/`, {
       method: "POST",
@@ -202,7 +210,7 @@ const PlayGame = (props) => {
                 Submit Rating
               </button>}
               <button className="transition-all duration-300 bg-aliceBlue w-1/5 h-8 rounded-md self-center mr-2 mt-10 hover:bg-gray-400"
-                onClick={() => history.go(0)}>
+                onClick={() => restart()}>
                 Retry
               </button>
             </div>

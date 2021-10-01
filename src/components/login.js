@@ -36,7 +36,8 @@ const Login = () => {
           let user_id = jwt_decode(data.access).user_id;
           setCookie("refresh", data.refresh);
           setCookie("user", user_id);
-          setUserContext((oldContext) => {return {...oldContext, username: username, access:data.access}});
+          setCookie("username", username);
+          setUserContext((oldContext) => {return {...oldContext, access:data.access}});
           history.push("/");
         }
       })

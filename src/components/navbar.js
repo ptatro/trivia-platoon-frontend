@@ -8,7 +8,7 @@ const Navbar = (props) => {
   const history = useHistory();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [userContext, setUserContext] = useContext(UserContext);
-  const [cookies, setCookies, removeCookies] = useCookies(['refresh', 'user']);
+  const [cookies, setCookies, removeCookies] = useCookies(['refresh', 'user', 'username']);
   const collapseButtonToggle = () => {
     let button = document.getElementById("collapseButton");
     button.innerText = isCollapsed ? "<<" : ">>"
@@ -18,6 +18,7 @@ const Navbar = (props) => {
   const logOutHandler = () => {
     removeCookies("refresh", {path:"/"});
     removeCookies("user", {path:"/"});
+    removeCookies("username", {path:"/"});
     history.push("/");
   }
 
@@ -36,7 +37,7 @@ const Navbar = (props) => {
         {cookies.refresh && <Link to="/creategame" className="text-aliceBlue hover:text-gray-400 mt-5">Create a game</Link>}
         {!cookies.refresh && <Link to="/login" className="text-aliceBlue hover:text-gray-400 mt-5">Log In</Link>}
         {!cookies.refresh && <Link to="/register" className="text-aliceBlue hover:text-gray-400 mt-5">Register</Link>}
-        {userContext.username && <h2 className="text-aliceBlue mt-16">Logged in as: {userContext.username}</h2>}
+        {cookies.username && <h2 className="text-aliceBlue mt-16">Logged in as: {cookies.username}</h2>}
         {cookies.refresh && <button to="/" className="text-aliceBlue hover:text-gray-400 mt-5" onClick={logOutHandler}>Log Out</button>}
       </nav>
       <div className="flex h-11 border-1 border-black rounded-r-md bg-manatee w-8 items-center justify-center">
