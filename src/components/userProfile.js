@@ -1,8 +1,10 @@
 import React, { useCallback, useContext, useEffect, useState } from "react"
 import { useHistory, useParams } from "react-router";
 import { UserContext } from "../context/UserContext"
+import { useCookies } from "react-cookie"
 
 const Profile = (props) => {
+  const [cookies, setCookies, removeCookies] = useCookies(['refresh', 'user', 'username']); // eslint-disable-line
   const [userContext, setUserContext] = useContext(UserContext); // eslint-disable-line
   const { profileUserId } = useParams();
   const [games, setGames] = useState([]);
@@ -108,10 +110,10 @@ const Profile = (props) => {
           <div className="flex-row w-full col-span-4">
             <button className=" transition-all duration-300 bg-gray-400 w-1/4 h-8 my-4 rounded-md self-center mr-2 hover:bg-gray-300 disabled:opacity-50" onClick={() => history.push(`/game/${g.id}`)}>
               Play</button>
-            <button className=" transition-all duration-300 bg-gray-400 w-1/4 h-8 my-4 rounded-md self-center mr-2 hover:bg-gray-300 disabled:opacity-50" onClick={() => history.push(`/edit/${g.id}`)}>
-              Edit</button>
-            <button className=" transition-all duration-300 bg-gray-400 w-1/4 h-8 my-4 rounded-md self-center mr-2 hover:bg-gray-300 disabled:opacity-50" onClick={() => deleteGame(g)}>
-              Delete</button>
+            {Number(cookies.user) === Number(profileUserId) && <button className=" transition-all duration-300 bg-gray-400 w-1/4 h-8 my-4 rounded-md self-center mr-2 hover:bg-gray-300 disabled:opacity-50" onClick={() => history.push(`/edit/${g.id}`)}>
+              Edit</button>}
+            {Number(cookies.user) === Number(profileUserId) && <button className=" transition-all duration-300 bg-gray-400 w-1/4 h-8 my-4 rounded-md self-center mr-2 hover:bg-gray-300 disabled:opacity-50" onClick={() => deleteGame(g)}>
+              Delete</button>}
           </div>
           }
         </div>
