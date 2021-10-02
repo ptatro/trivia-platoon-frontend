@@ -1,26 +1,21 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useCallback } from "react";
 import { useParams, useHistory } from "react-router";
 import { UserContext } from "../context/UserContext";
+import { useCookies } from "react-cookie"
 
 const GamePage = (props) => {
+  const [cookies, setCookies, removeCookies] = useCookies(['refresh', 'user', 'username']); // eslint-disable-line
   const [firstRequestDone, setFirstRequestDone] = useState(false);
   const [questionRequestDone, setQuestionRequestDone] = useState(false);
-  const [gameDetailsCollapsed, setGameDetailsCollapsed] = useState(false);
   const [game, setGame] = useState(null);
   const [results, setResults] = useState([]);
   const {gameId} = useParams();
   const [error, setError] = useState("");
   const history = useHistory();
-  const [userContext, setUserContext] = useContext(UserContext);
+  const [userContext, setUserContext] = useContext(UserContext); // eslint-disable-line
   const [hasQuestions, setHasQuestions] = useState(false);
 
-  const gameDetailsCollapseButtonToggle = () => {
-    let button = document.getElementById("gameDetailsCollapseButton");
-    button.innerText = gameDetailsCollapsed ? "^" : "v"
-    setGameDetailsCollapsed(!gameDetailsCollapsed);
-  }
-
-  const getGame = async() => {
+  const getGame = useCallback(() => {
     const genericErrorMessage = "Something went wrong! Please try again later."
     fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games/${gameId}`, {
       method: "GET",
@@ -29,7 +24,6 @@ const GamePage = (props) => {
       },
     })
       .then(async response => {
-        //setIsSubmitting(false)
         if (!response.ok) {
             let data = await response.json();
             console.log(data);
@@ -42,13 +36,12 @@ const GamePage = (props) => {
         setFirstRequestDone(true);
       })
       .catch(error => {
-        //setIsSubmitting(false)
         setError(genericErrorMessage);
         setFirstRequestDone(true);
       })
-  }
+  }, [setFirstRequestDone, setGame, gameId]);
 
-  const getQuestions = async() => {
+  const getQuestions = useCallback(() => {
     fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games/${gameId}/questions/`, {
       method: "GET",
       credentials: "include",
@@ -74,9 +67,9 @@ const GamePage = (props) => {
         console.log(error);
         setQuestionRequestDone(true);
       })
-  }
+  }, [setQuestionRequestDone, setHasQuestions, userContext, gameId]);
 
-  const getResults = () => {
+  const getResults = useCallback(() => {
     fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games/${gameId}/results/`, {
       method: "GET",
       credentials: "include",
@@ -98,32 +91,34 @@ const GamePage = (props) => {
       .catch(error => {
         console.log(error);
       })
-  }
+  }, [gameId, userContext, setResults]);
 
-  useEffect(async () => {
+  useEffect(() => {
     if(!firstRequestDone){
-      await getGame();
+      removeCookies("refresh", {path:"/game"});
+      removeCookies("user", {path:"/game"});
+      removeCookies("username", {path:"/game"});  
+      getGame();
       if(game){
         getResults();
       }
       if(userContext.access && game && !questionRequestDone){getQuestions();}
     }
-  }, [game, getGame, getQuestions, userContext, questionRequestDone]);
+  }, [game, getGame, getQuestions, userContext, questionRequestDone, firstRequestDone, getResults, removeCookies]);
 
   return (
-    <div className="flex flex-col items-center justify-start w-full h-full overflow-auto">
-      <div className={gameDetailsCollapsed ? "transition-all duration-300 flex flex-col w-4/5 h-0 bg-manatee rounded-b-lg" :
-        "transition-all duration-300 flex flex-col w-4/5 h-auto bg-manatee rounded-b-lg"}>
+    <div className="flex flex-col items-center justify-start w-full h-full overflow-auto pb-10">
+      <div className="transition-all duration-300 flex flex-col w-4/5 h-auto bg-manatee rounded-b-lg">
         <div className="h-16 bg-imperialRed">
           <h1 className="text-md text-aliceBlue mt-4 lg:text-3xl md:text-2xl">{game ? game.name : ""}</h1>
         </div>
         <div className="flex flex-col h-full w-full">
-        {!hasQuestions && gameId && firstRequestDone && questionRequestDone &&<h1 className="mt-4 text-lg text-red-600">This game has no questions added.</h1>}
+        {!hasQuestions && gameId && firstRequestDone && questionRequestDone && <h1 className="mt-4 text-lg text-red-600">This game has no questions added.</h1>}
         
         {error && <h1 className="mt-4 text-lg text-red-600">{error}</h1>}
           <div className="flex flex-row w-full">
-          {game && <img className="rounded-md m-2 max-w-sm" src={game.image}></img>}
-          <form id="gameDetailsForm" className={`flex flex-col h-full w-full justify-start items-center pt-2 ${gameDetailsCollapsed ? "hidden" : ""}`}>
+          {game && <img className="rounded-md m-2 max-w-sm" alt="game" src={game.image}></img>}
+          <form id="gameDetailsForm" className="flex flex-col h-full w-full justify-start items-center pt-2">
             <label className="text-aliceBlue mr-2" htmlFor="gameTitleInput">Title</label>
             <input disabled className="w-3/5 h-10 text-lg" id="gameTitleInput" type="text" placeholder="Title" maxlength="255" value={game ? game.name: ""}></input>
             <label className="text-aliceBlue mt-4 mr-2" htmlFor="gameDescriptionText">Description</label>
@@ -140,14 +135,20 @@ const GamePage = (props) => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col w-4/5 h-auto bg-manatee rounded-lg mt-10">
+      <div className="flex flex-col w-3/5 h-screen bg-manatee rounded-lg mt-10">
         <div className="h-16 bg-imperialRed">
           <h1 className="text-md text-aliceBlue mt-4 lg:text-3xl md:text-2xl">Leaderboard</h1>
         </div>
-        <div className="h-full w-full flex flex-col items-center overflow-auto">
+        <div className="h-full w-full flex flex-col items-center overflow-auto pb-8">
+          <div className="transition-all h-11/12 w-6/12 grid grid-cols-3 text-aliceBlue mt-4">
+            <h2 className="justify-self-start ml-5 text-xl">#</h2>
+            <h2 className="justify-self-start ml-5 text-xl">User</h2>
+            <h2 className="justify-self-start ml-5 text-xl">Score</h2>
+          </div>
           {results && results.map((r,i) => {
-            return <div className="transition-all h-11/12 w-6/12 grid grid-cols-2 bg-aliceBlue rounded-md mt-4 hover:bg-gray-400">
-              <h2 className="justify-self-start ml-5 text-xl">{r.player}</h2>
+            return <div className="transition-all h-11/12 w-6/12 grid grid-cols-3 bg-aliceBlue rounded-md mt-4 hover:bg-gray-400">
+              <h2 className="justify-self-start ml-5 text-xl">{i + 1}</h2>
+              <h2 className="justify-self-start ml-5 text-xl">{r.player.username}</h2>
               <h2 className="justify-self-start ml-5 text-xl">{r.score}</h2>
             </div>
             })}

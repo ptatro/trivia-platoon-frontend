@@ -1,6 +1,6 @@
-import React, { useContext, useEffect, useState } from "react"
+import React, { useCallback, useContext, useEffect, useState } from "react"
 import { useCookies } from "react-cookie"
-import { useParams, useHistory } from "react-router";
+import { useParams } from "react-router";
 import { UserContext } from "../context/UserContext";
 
 const PlayGame = (props) => {
@@ -8,16 +8,15 @@ const PlayGame = (props) => {
   const [questionRequestDone, setQuestionRequestDone] = useState(false);
   const [game, setGame] = useState(null);
   const {gameId} = useParams();
-  const [error, setError] = useState("Error");
-  const history = useHistory();
-  const [userContext, setUserContext] = useContext(UserContext);
+  const [error, setError] = useState("Error"); // eslint-disable-line
+  const [userContext, setUserContext] = useContext(UserContext); // eslint-disable-line
   const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
   const [selectedRating, setSelectedRating] = useState(0);
   const [ratingSubmitted, setRatingSubmitted] = useState(false);
   const [resultsId, setResultsId] = useState(null);
-  const [cookies, setCookie, removeCookie] = useCookies(['user', 'refresh', 'username']);
+  const [cookies, setCookie, removeCookie] = useCookies(['user', 'refresh', 'username']); // eslint-disable-line
   const genericErrorMessage = "Something went wrong! Please try again later.";
 
   const restart = () => {
@@ -32,7 +31,7 @@ const PlayGame = (props) => {
     setResultsId(null);
   }
 
-  const getGame = async() => {
+  const getGame = useCallback(() => {
     fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games/${gameId}/`, {
       method: "GET",
       headers: {
@@ -42,6 +41,7 @@ const PlayGame = (props) => {
       .then(async response => {
         if (!response.ok) {
             let data = await response.json();
+            console.log(data);
             setError(genericErrorMessage);
         } else {
           let data = await response.json();
@@ -51,12 +51,12 @@ const PlayGame = (props) => {
         setFirstRequestDone(true);
       })
       .catch(error => {
-        setError(genericErrorMessage);
+        setError(error);
         setFirstRequestDone(true);
       })
-  }
+  }, [setError, setFirstRequestDone, setGame, gameId]);
 
-  const getQuestions = async() => {
+  const getQuestions = useCallback(() => {
     let authString = `JWT ${userContext.access}`;
     fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games/${gameId}/questions/`, {
       method: "GET",
@@ -69,6 +69,7 @@ const PlayGame = (props) => {
       .then(async response => {
         if (!response.ok) {
             let data = await response.json();
+            console.log(data);
             setError(genericErrorMessage);
         } else {
           let data = await response.json();
@@ -78,10 +79,10 @@ const PlayGame = (props) => {
         setQuestionRequestDone(true);
       })
       .catch(error => {
-        setError(genericErrorMessage);
+        setError(error);
         setQuestionRequestDone(true);
       })
-  }
+  }, [gameId, setQuestions, setError, setQuestionRequestDone, userContext]);
 
   const submitResult = async() => {
     const result = {      score: score,
@@ -99,6 +100,7 @@ const PlayGame = (props) => {
     .then(async response => {
       if (!response.ok) {
           let data = await response.json();
+          console.log(data);
           setError(genericErrorMessage);
       } else {
         let data = await response.json();
@@ -107,7 +109,7 @@ const PlayGame = (props) => {
       }
     })
     .catch(error => {
-      setError(genericErrorMessage)
+      setError(error);
     });
   }
 
@@ -130,9 +132,9 @@ const PlayGame = (props) => {
     .then(async response => {
       if (!response.ok) {
           let data = await response.json();
+          console.log(data);
           setError(genericErrorMessage);
       } else {
-        let data = await response.json();
         setError("");
         setRatingSubmitted(true);
       }
@@ -158,14 +160,14 @@ const PlayGame = (props) => {
     setCurrentQuestion(currentQuestion+1);
   }
 
-  useEffect(async () => {
+  useEffect(() => {
     if(!firstRequestDone){
-      await getGame();
+      getGame();
       if(game && !questionRequestDone && userContext.access){
-        await getQuestions();
+        getQuestions();
       }
     }
-  }, [game, getGame, getQuestions, userContext]);
+  }, [game, getGame, getQuestions, userContext, firstRequestDone, questionRequestDone]);
 
   return (
     <div className="flex flex-col items-center justify-start w-full h-full overflow-auto">

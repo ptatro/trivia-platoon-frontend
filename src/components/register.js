@@ -1,18 +1,13 @@
-import React, { useContext, useState } from "react"
-import { Link } from "react-router-dom";
+import React, { useState } from "react"
 import { useHistory } from "react-router";
-import { UserContext } from "../context/UserContext"
-import { useCookies } from "react-cookie"
 
 const Register = (props) => {
   const history = useHistory();
-  const [userContext, setUserContext] = useContext(UserContext);
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState("")
   const [username, setUsername] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [cookies, setCookie, removeCookie] = useCookies(['cookie-name']);
 
   const formSubmitHandler = e => {
     e.preventDefault()
@@ -29,7 +24,7 @@ const Register = (props) => {
         setIsSubmitting(false)
         if (!response.ok) {
             let data = await response.json();
-            setError((data.username && data.username) || (data.email && data.email[0]) || (data.password && data.password[0]) || genericErrorMessage);
+            setError((data.username && data.username[0]) || (data.email && data.email[0]) || (data.password && data.password[0]) || genericErrorMessage);
             console.log(data);
         } else {
           history.push("/login");

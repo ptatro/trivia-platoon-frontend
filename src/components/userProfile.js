@@ -1,20 +1,16 @@
-import React, { useContext, useEffect, useState } from "react"
-import { Link } from "react-router-dom";
+import React, { useCallback, useContext, useEffect, useState } from "react"
 import { useHistory, useParams } from "react-router";
 import { UserContext } from "../context/UserContext"
-import { useCookies } from "react-cookie"
 
 const Profile = (props) => {
-  const [userContext, setUserContext] = useContext(UserContext);
-  const [cookies, setCookies, removeCookies] = useCookies(['refresh', 'user', 'username']);
+  const [userContext, setUserContext] = useContext(UserContext); // eslint-disable-line
   const { profileUserId } = useParams();
   const [games, setGames] = useState([]);
-  const [deleteConfirm, setDeleteConfirm] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(""); // eslint-disable-line
   const [firstRequestDone, setFirstRequestDone] = useState(false);
   const history = useHistory();
 
-  const getUserGames = async() => {
+  const getUserGames = useCallback(() => {
     const genericErrorMessage = "Something went wrong! Please try again later."
     fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games?creator=${profileUserId}`, {
       method: "GET",
@@ -42,7 +38,7 @@ const Profile = (props) => {
         setFirstRequestDone(true);
         setTimeout(getUserGames, 1 * 60 * 1000);
       })
-  }
+  }, [setFirstRequestDone, profileUserId]);
 
   const deleteGame = async(game) => {
     const genericErrorMessage = "Something went wrong! Please try again later."

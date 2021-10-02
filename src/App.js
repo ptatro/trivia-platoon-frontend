@@ -6,7 +6,7 @@ import {BrowserRouter as Router, Redirect, Route, Switch} from 'react-router-dom
 import { UserContext } from "./context/UserContext";
 import Register from './components/register';
 import Login from './components/login';
-import { useCookies, Cookies } from "react-cookie"
+import { useCookies } from "react-cookie"
 import CreateGame from './components/createGame';
 import GamePage from './components/gamePage';
 import PlayGame from './components/playGame';
@@ -14,8 +14,8 @@ import Profile from './components/userProfile';
 import EditGame from './components/editGame';
 
 function App() {
-  const [userContext, setUserContext] = useContext(UserContext);
-  const [refreshCookie, setRefreshCookie, removeRefreshCookie] = useCookies(['refresh']);
+  const [userContext, setUserContext] = useContext(UserContext); // eslint-disable-line
+  const [refreshCookie, setRefreshCookie, removeRefreshCookie] = useCookies(['refresh']); // eslint-disable-line
 
   const verifyUser = useCallback(() => {
     if(!refreshCookie.refresh){return;}
@@ -40,7 +40,7 @@ function App() {
       // call refreshToken every 14.5 minutes to renew the authentication token.
       setTimeout(verifyUser, 14.5 * 60 * 1000)
     })
-  }, [setUserContext])
+  }, [setUserContext, refreshCookie])
   useEffect(() => {
     verifyUser()
   }, [verifyUser])

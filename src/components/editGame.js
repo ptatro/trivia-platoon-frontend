@@ -1,26 +1,25 @@
-import React, { useContext, useState, useEffect } from "react"
+import React, { useContext, useState, useEffect, useCallback } from "react"
 import { useCookies } from "react-cookie"
 import { UserContext } from "../context/UserContext";
 import { useHistory, useParams } from "react-router";
 
 const EditGame = () => {
-  const [tokenCookie, setTokenCookie, removeTokenCookie] = useCookies(['token']);
   const [firstRequestDone, setFirstRequestDone] = useState(false);
   const [questionRequestDone, setQuestionRequestDone] = useState(false);
   const [game, setGame] = useState(null);
-  const [idCookie, setIdCookie, removeIdCookie] = useCookies(['user']);
+  const [idCookie, setIdCookie, removeIdCookie] = useCookies(['user']); // eslint-disable-line
   const [error, setError] = useState("")
   const {gameId} = useParams();
-  const [gameDetails, setGameDetails] = useState(null);
+  const [gameDetails, setGameDetails] = useState(null); // eslint-disable-line
   const [questions, setQuestions] = useState([]);
   const [newQuestions, setNewQuestions] = useState([]);
   const [questionType, setQuestionType] = useState("");
   const [gameDetailsCollapsed, setGameDetailsCollapsed] = useState(false);
-  const [userContext, setUserContext] = useContext(UserContext);
+  const [userContext, setUserContext] = useContext(UserContext); // eslint-disable-line
   const history = useHistory();
   const genericErrorMessage = "Something went wrong! Please try again later.";
 
-  const getGame = async() => {
+  const getGame = useCallback(() => {
     fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games/${gameId}/`, {
       method: "GET",
       headers: {
@@ -30,20 +29,20 @@ const EditGame = () => {
       .then(async response => {
         if (!response.ok) {
             let data = await response.json();
+            console.log(data);
             setError(genericErrorMessage);
         } else {
           let data = await response.json();
           setGame(data);
-          //document.getElementById("gameTitleInput").value = data.name;
           setError("");
         }
         setFirstRequestDone(true);
       })
       .catch(error => {
-        setError(genericErrorMessage);
+        setError(error);
         setFirstRequestDone(true);
       })
-  }
+  },[setFirstRequestDone, gameId]);
 
   const addQuestion = () => {
     let questionData = {
@@ -99,15 +98,6 @@ const EditGame = () => {
       })
   }
 
-  const clearGame = () => {
-    setNewQuestions([]);
-    document.getElementById("gameTitleInput").value = "";
-    document.getElementById("gameDescriptionText").value = "";
-    document.getElementById("questionTextArea").value = "";
-    document.getElementById("typeSelectBlank").selected = true;
-    setQuestionType("");
-  }
-
   const clearQuestionFields = () => {
     document.getElementById("questionTextArea").value = "";
     if(questionType === "multipleChoice"){
@@ -139,7 +129,6 @@ const EditGame = () => {
 
 
     if(document.getElementById("gameImageUpload").files[0]){
-      //gameData.image = document.getElementById("gameImageUpload").files[0];
       formData.append("image", document.getElementById("gameImageUpload").files[0]);
     }
     const genericErrorMessage = "Something went wrong! Please try again later."
@@ -167,7 +156,7 @@ const EditGame = () => {
       })
   }
 
-  const getQuestions = async() => {
+  const getQuestions = useCallback(() => {
     fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games/${gameId}/questions/`, {
       method: "GET",
       credentials: "include",
@@ -179,6 +168,7 @@ const EditGame = () => {
       .then(async response => {
         if (!response.ok) {
             let data = await response.json();
+            console.log(data);
             setError(genericErrorMessage);
         } else {
           let data = await response.json();
@@ -193,15 +183,9 @@ const EditGame = () => {
         setError(genericErrorMessage);
         setQuestionRequestDone(true);
       })
-  }
+  }, [setNewQuestions, setQuestionRequestDone, gameId, userContext]);
 
   const submitQuestions = async(question) => {
-    let gameData = {
-      name: document.getElementById("gameTitleInput").value,
-      description: document.getElementById("gameDescriptionText").value,
-      category: document.getElementById("categorySelect").value,
-      creator: idCookie.user,
-    }
     const genericErrorMessage = "Something went wrong! Please try again later.";
     fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games/${gameId}/questions/`, {
       method: "POST",
@@ -213,31 +197,28 @@ const EditGame = () => {
       body: JSON.stringify(question),
     })
       .then(async response => {
-        //setIsSubmitting(false)
         if (!response.ok) {
             let data = await response.json();
             console.log(data);
             setError(data.description[0] || data.name[0] || data.category[0] || data.creator[0] || data.image[0] || genericErrorMessage);
         } else {
-          let data = await response.json();
           setError("");
           history.push(`/game/${gameId}`)
         }
       })
       .catch(error => {
-        //setIsSubmitting(false)
         setError(genericErrorMessage)
       });
   }
 
-  useEffect(async () => {
+  useEffect(() => {
     if(!firstRequestDone){
-      await getGame();
+      getGame();
       if(game && userContext.access && !questionRequestDone){
         getQuestions();
       }
     }
-  }, [game, getGame, getQuestions, userContext, questionRequestDone]);
+  }, [game, getGame, getQuestions, userContext, questionRequestDone, firstRequestDone]);
 
 
   return (
@@ -250,7 +231,7 @@ const EditGame = () => {
         <div className="flex flex-col h-full w-full">
         {error && <h1 className="mt-4 text-lg text-red-600">{error}</h1>}
         <div className="flex flex-row w-full">
-        {game && <img className="rounded-md m-2 max-w-sm" src={game.image}></img>}
+        {game && <img className="rounded-md m-2 max-w-sm" alt="game" src={game.image}></img>}
           <form id="gameDetailsForm" className={`flex flex-col h-full w-full justify-start items-center pt-2 ${gameDetailsCollapsed ? "hidden" : ""}`}>
             <input className="w-3/5 h-10 text-lg" id="gameTitleInput" type="text" placeholder="Title" maxlength="255" defaultValue={game ? game.name : ""}></input>
             <textarea className="w-3/5 h-1/3 mt-5 p-2" id="gameDescriptionText" placeholder="Description" defaultValue={game ? game.description : ""}></textarea>

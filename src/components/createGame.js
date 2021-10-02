@@ -4,15 +4,14 @@ import { UserContext } from "../context/UserContext";
 import { useHistory } from "react-router";
 
 const CreateGame = () => {
-  const [tokenCookie, setTokenCookie, removeTokenCookie] = useCookies(['token']);
-  const [idCookie, setIdCookie, removeIdCookie] = useCookies(['user']);
+  const [idCookie, setIdCookie, removeIdCookie] = useCookies(['user']); // eslint-disable-line
   const [error, setError] = useState("")
   const [gameId, setGameId] = useState(null);
-  const [gameDetails, setGameDetails] = useState(null);
+  const [gameDetails, setGameDetails] = useState(null); // eslint-disable-line
   const [questions, setQuestions] = useState([]);
   const [questionType, setQuestionType] = useState("");
   const [gameDetailsCollapsed, setGameDetailsCollapsed] = useState(false);
-  const [userContext, setUserContext] = useContext(UserContext);
+  const [userContext, setUserContext] = useContext(UserContext); // eslint-disable-line
   const history = useHistory();
 
   const addQuestion = () => {
@@ -90,7 +89,6 @@ const CreateGame = () => {
     formData.append("creator", idCookie.user);
 
     if(document.getElementById("gameImageUpload").files[0]){
-      //gameData.image = document.getElementById("gameImageUpload").files[0];
       formData.append("image", document.getElementById("gameImageUpload").files[0]);
     }
     const genericErrorMessage = "Something went wrong! Please try again later."
@@ -120,12 +118,6 @@ const CreateGame = () => {
   }
 
   const submitQuestions = async(question) => {
-    let gameData = {
-      name: document.getElementById("gameTitleInput").value,
-      description: document.getElementById("gameDescriptionText").value,
-      category: document.getElementById("categorySelect").value,
-      creator: idCookie.user,
-    }
     const genericErrorMessage = "Something went wrong! Please try again later.";
     fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games/${gameId}/questions/`, {
       method: "POST",
@@ -137,19 +129,16 @@ const CreateGame = () => {
       body: JSON.stringify(question),
     })
       .then(async response => {
-        //setIsSubmitting(false)
         if (!response.ok) {
             let data = await response.json();
             console.log(data);
             setError(data.description[0] || data.name[0] || data.category[0] || data.creator[0] || data.image[0] || genericErrorMessage);
         } else {
-          let data = await response.json();
           setError("");
           history.push(`/game/${gameId}`)
         }
       })
       .catch(error => {
-        //setIsSubmitting(false)
         setError(genericErrorMessage)
       });
   }

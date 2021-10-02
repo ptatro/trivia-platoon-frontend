@@ -1,22 +1,21 @@
 import React, { useContext, useState } from "react"
-import { Link } from "react-router-dom";
 import { useHistory } from "react-router";
 import { UserContext } from "../context/UserContext"
 import { useCookies } from "react-cookie"
 import jwt_decode from "jwt-decode";
+
 const Login = () => {
   const history = useHistory();
-  const [userContext, setUserContext] = useContext(UserContext);
+  const [userContext, setUserContext] = useContext(UserContext); // eslint-disable-line
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState("")
-  const [cookies, setCookie, removeCookie] = useCookies(['refresh', 'user', 'username']);
+  const [cookies, setCookie, removeCookie] = useCookies(['refresh', 'user', 'username']); // eslint-disable-line
 
   const formSubmitHandler = e => {
-    
-    e.preventDefault()
-    setIsSubmitting(true)
+    e.preventDefault();
+    setIsSubmitting(true);
     setError("")
     const genericErrorMessage = "Something went wrong! Please try again later."
     fetch(`${process.env.REACT_APP_API_ENDPOINT}auth/token/obtain/`, {

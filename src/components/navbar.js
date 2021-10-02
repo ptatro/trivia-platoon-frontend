@@ -1,14 +1,12 @@
-import React, { useContext, useState } from "react"
+import React, { useState } from "react"
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router";
-import { UserContext } from "../context/UserContext"
 import { useCookies } from "react-cookie"
 
 const Navbar = (props) => {
   const history = useHistory();
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [userContext, setUserContext] = useContext(UserContext);
-  const [cookies, setCookies, removeCookies] = useCookies(['refresh', 'user', 'username']);
+  const [cookies, setCookies, removeCookies] = useCookies(['refresh', 'user', 'username']); // eslint-disable-line
   const collapseButtonToggle = () => {
     let button = document.getElementById("collapseButton");
     button.innerText = isCollapsed ? "<<" : ">>"
