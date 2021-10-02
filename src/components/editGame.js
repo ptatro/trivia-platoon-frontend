@@ -231,7 +231,7 @@ const EditGame = () => {
         <div className="flex flex-col h-full w-full">
         {error && <h1 className="mt-4 text-lg text-red-600">{error}</h1>}
         <div className="flex flex-row w-full">
-        {game && <img className="rounded-md m-2 max-w-sm" alt="game" src={game.image}></img>}
+        {game && !gameDetailsCollapsed && <img className="rounded-md m-2 max-w-sm" alt="game" src={game.image}></img>}
           <form id="gameDetailsForm" className={`flex flex-col h-full w-full justify-start items-center pt-2 ${gameDetailsCollapsed ? "hidden" : ""}`}>
             <input className="w-3/5 h-10 text-lg" id="gameTitleInput" type="text" placeholder="Title" maxlength="255" defaultValue={game ? game.name : ""}></input>
             <textarea className="w-3/5 h-1/3 mt-5 p-2" id="gameDescriptionText" placeholder="Description" defaultValue={game ? game.description : ""}></textarea>

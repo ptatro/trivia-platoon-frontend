@@ -3,14 +3,16 @@ import { useHistory } from "react-router";
 
 const Register = (props) => {
   const history = useHistory();
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [error, setError] = useState("")
-  const [username, setUsername] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
 
   const formSubmitHandler = e => {
-    e.preventDefault()
+    e.preventDefault();
+    if(!checkPasswordMatch()){return;}
     setIsSubmitting(true)
     setError("")
     const genericErrorMessage = "Something went wrong! Please try again later."
@@ -35,6 +37,19 @@ const Register = (props) => {
         setIsSubmitting(false)
         setError(genericErrorMessage)
       })
+  }
+
+  const checkPasswordMatch = () => {
+    if(passwordConfirm !== password){
+      setError("Passwords do not match.");
+      console.log(passwordConfirm);
+      console.log(password);
+      return false;
+    }
+    else{
+      setError("");
+      return true;
+    }
   }
 
   return(<div className="w-full h-1/2 flex items-center justify-center">
@@ -63,7 +78,14 @@ const Register = (props) => {
             onChange={e => setPassword(e.target.value)}
             value={password}
           />
-      <button className="transition-all duration-300 mt-4 border-2 rounded-md border-gray-400 hover:bg-gray-300" intent="primary" text="Register" type="submit" disabled={isSubmitting}>
+          <input
+            id="passwordConfirm"
+            className="mt-4 h-10"
+            placeholder="Confirm Password"
+            type="password"
+            onChange={e => {setPasswordConfirm(e.target.value);}}
+            value={passwordConfirm}
+          />      <button className="transition-all duration-300 mt-4 border-2 rounded-md border-gray-400 hover:bg-gray-300" intent="primary" text="Register" type="submit" disabled={isSubmitting}>
             {`${isSubmitting ? "Registering" : "Register"}`}
       </button>
     </form>
