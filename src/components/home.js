@@ -24,7 +24,6 @@ const Home = (props) => {
         } else {
           let data = await response.json();
           setGames(data);
-          console.log(data);
           setError("");
         }
         setFirstRequestDone(true);
