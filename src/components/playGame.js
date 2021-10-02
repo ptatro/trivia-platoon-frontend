@@ -1,26 +1,38 @@
-import React, { useContext, useEffect, useState } from "react"
+import React, { useCallback, useContext, useEffect, useState } from "react"
 import { useCookies } from "react-cookie"
-import { useParams, useHistory } from "react-router";
+import { useParams } from "react-router";
 import { UserContext } from "../context/UserContext";
 
 const PlayGame = (props) => {
-  const [gameDetailsCollapsed, setGameDetailsCollapsed] = useState(false);
+  const [firstRequestDone, setFirstRequestDone] = useState(false);
+  const [questionRequestDone, setQuestionRequestDone] = useState(false);
   const [game, setGame] = useState(null);
   const {gameId} = useParams();
-  const [error, setError] = useState("Error");
-  const history = useHistory();
-  const [userContext, setUserContext] = useContext(UserContext);
+  const [error, setError] = useState("Error"); // eslint-disable-line
+  const [userContext, setUserContext] = useContext(UserContext); // eslint-disable-line
   const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
   const [selectedRating, setSelectedRating] = useState(0);
   const [ratingSubmitted, setRatingSubmitted] = useState(false);
   const [resultsId, setResultsId] = useState(null);
-  const [cookies, setCookie, removeCookie] = useCookies(['user']);
+  const [cookies, setCookie, removeCookie] = useCookies(['user', 'refresh', 'username']); // eslint-disable-line
   const genericErrorMessage = "Something went wrong! Please try again later.";
 
-  const getGame = async() => {
-    fetch("http://localhost:8000/api/games/" + `${gameId}/`, {
+  const restart = () => {
+    setFirstRequestDone(false);
+    setQuestionRequestDone(false);
+    setSelectedRating(0);
+    setRatingSubmitted(false);
+    setGame(null);
+    setQuestions([]);
+    setCurrentQuestion(0);
+    setScore(0);
+    setResultsId(null);
+  }
+
+  const getGame = useCallback(() => {
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games/${gameId}/`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -29,50 +41,54 @@ const PlayGame = (props) => {
       .then(async response => {
         if (!response.ok) {
             let data = await response.json();
+            console.log(data);
             setError(genericErrorMessage);
         } else {
           let data = await response.json();
           setGame(data);
           setError("");
         }
+        setFirstRequestDone(true);
       })
       .catch(error => {
-        setError(genericErrorMessage)
+        setError(error);
+        setFirstRequestDone(true);
       })
-  }
+  }, [setError, setFirstRequestDone, setGame, gameId]);
 
-  const getQuestions = async() => {
-    fetch("http://localhost:8000/api/games/" + `${gameId}/questions`, {
+  const getQuestions = useCallback(() => {
+    let authString = `JWT ${userContext.access}`;
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games/${gameId}/questions/`, {
       method: "GET",
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `JWT ${userContext.access}`
+        "Authorization": authString
       },
     })
       .then(async response => {
         if (!response.ok) {
             let data = await response.json();
+            console.log(data);
             setError(genericErrorMessage);
         } else {
           let data = await response.json();
-          console.log(data);
           setQuestions(data);
           setError("");
         }
+        setQuestionRequestDone(true);
       })
       .catch(error => {
-        setError(genericErrorMessage)
+        setError(error);
+        setQuestionRequestDone(true);
       })
-  }
+  }, [gameId, setQuestions, setError, setQuestionRequestDone, userContext]);
 
   const submitResult = async() => {
     const result = {      score: score,
       player: cookies.user,
-
-      player: cookies.user
     }
-    fetch("http://localhost:8000/api/games/" + gameId + "/results/", {
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games/${gameId}/results/`, {
       method: "POST",
       credentials: "include",
       headers: {
@@ -84,6 +100,7 @@ const PlayGame = (props) => {
     .then(async response => {
       if (!response.ok) {
           let data = await response.json();
+          console.log(data);
           setError(genericErrorMessage);
       } else {
         let data = await response.json();
@@ -92,7 +109,7 @@ const PlayGame = (props) => {
       }
     })
     .catch(error => {
-      setError(genericErrorMessage)
+      setError(error);
     });
   }
 
@@ -103,7 +120,7 @@ const PlayGame = (props) => {
       rating: document.getElementById("ratingSelect").value
     }
 
-    fetch("http://localhost:8000/api/games/" + gameId + `/results/${resultsId}/`, {
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}api/games/${gameId}/results/${resultsId}/`, {
       method: "PUT",
       credentials: "include",
       headers: {
@@ -115,9 +132,9 @@ const PlayGame = (props) => {
     .then(async response => {
       if (!response.ok) {
           let data = await response.json();
+          console.log(data);
           setError(genericErrorMessage);
       } else {
-        let data = await response.json();
         setError("");
         setRatingSubmitted(true);
       }
@@ -144,11 +161,13 @@ const PlayGame = (props) => {
   }
 
   useEffect(() => {
-    if(!game){
+    if(!firstRequestDone){
       getGame();
-      getQuestions();
+      if(game && !questionRequestDone && userContext.access){
+        getQuestions();
+      }
     }
-  }, [game, getGame, getQuestions]);
+  }, [game, getGame, getQuestions, userContext, firstRequestDone, questionRequestDone]);
 
   return (
     <div className="flex flex-col items-center justify-start w-full h-full overflow-auto">
@@ -180,7 +199,7 @@ const PlayGame = (props) => {
                 <label type="text" htmlFor="answerRadio3" id="answerText3" className="w-4/5 h-10 text-lg">{questions[currentQuestion].answers[3].text}</label>
               </span>}
         </div>}
-        { currentQuestion === questions.length &&(
+        { currentQuestion === questions.length && firstRequestDone && questionRequestDone && (
             <div id="answersDiv"className="flex flex-col bg-gray-300 items-center justify-start rounded-md px-4 py-2 w-11/12 h-3/5 mt-10">
               <h2 className="text-3xl">{`${score} correct out of ${questions.length}!`}</h2>
               <h2 className="text-xl mt-10">{ratingSubmitted ? "Rating submitted!" : "Would you like to rate this quiz?"}</h2>
@@ -197,7 +216,7 @@ const PlayGame = (props) => {
                 Submit Rating
               </button>}
               <button className="transition-all duration-300 bg-aliceBlue w-1/5 h-8 rounded-md self-center mr-2 mt-10 hover:bg-gray-400"
-                onClick={() => history.go(0)}>
+                onClick={() => restart()}>
                 Retry
               </button>
             </div>
