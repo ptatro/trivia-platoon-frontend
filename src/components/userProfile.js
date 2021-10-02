@@ -67,6 +67,9 @@ const Profile = (props) => {
   }
   useEffect(() => {
     if(!firstRequestDone){
+      removeCookies("refresh", {path:"/profile"});
+      removeCookies("user", {path:"/profile"});
+      removeCookies("username", {path:"/profile"});  
       getUserGames();
     }
   }, [games, getUserGames, firstRequestDone]);
