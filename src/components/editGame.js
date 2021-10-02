@@ -257,7 +257,7 @@ const EditGame = () => {
             {'^'}
           </button>
         </div>
-      <div id="createQuestionsDiv" className={ gameId ? "transition-all duration-500 flex flex-col w-4/5 h-auto bg-manatee rounded-lg my-4 overflow-auto items-center" :
+      <div id="createQuestionsDiv" className={ gameId ? "transition-all duration-500 flex flex-col w-4/5 h-auto bg-manatee rounded-lg my-4 items-center" :
         "transition-all duration-500 flex flex-col w-4/5 h-0 bg-manatee rounded-lg my-4 overflow-auto"}>
         <div className="h-16 bg-imperialRed w-full mb-2">
           <h1 className="text-md text-aliceBlue mt-4 lg:text-3xl md:text-2xl">Add Question</h1>
@@ -311,7 +311,7 @@ const EditGame = () => {
         </form>
       </div>
       { newQuestions.length > 0 &&
-      <div id="currentQuestionsDiv" className={ gameId ? "transition-all duration-500 flex flex-col w-4/5 h-auto bg-manatee rounded-lg my-4 overflow-auto items-center overflow-auto" :
+      <div id="currentQuestionsDiv" className={ gameId ? "transition-all duration-500 flex flex-col w-4/5 h-auto bg-manatee rounded-lg my-4 items-center" :
       "transition-all duration-500 flex flex-col w-4/5 h-0 bg-manatee rounded-lg my-4 overflow-auto"}>
         <div className="h-16 bg-imperialRed w-full mb-2">
           <h1 className="text-md text-aliceBlue mt-4 lg:text-3xl md:text-2xl">Questions</h1>
