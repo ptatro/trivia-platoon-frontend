@@ -12,6 +12,8 @@ import GamePage from './components/gamePage';
 import PlayGame from './components/playGame';
 import Profile from './components/userProfile';
 import EditGame from './components/editGame';
+import JoinGame from './components/joinGame';
+import GameLobby from './components/gameLobby';
 
 function App() {
   const [userContext, setUserContext] = useContext(UserContext); // eslint-disable-line
@@ -56,6 +58,8 @@ function App() {
           {refreshCookie.refresh && <Route exact path="/play/:gameId" component={PlayGame}/>}
           {refreshCookie.refresh && <Route exact path="/edit/:gameId" component={EditGame}/>}
           {refreshCookie.refresh && <Route exact path="/creategame" component={CreateGame}/>}
+          {refreshCookie.refresh && <Route exact path="/join" component={JoinGame}/>}
+          {refreshCookie.refresh && <Route exact path="/lobby" component={GameLobby}/>}
           {refreshCookie.refresh && <Route exact path="/profile/:profileUserId" render={(props) => <Profile key={props.match.params.profileUserId}/>}/>}
           {!refreshCookie.refresh && <Route exact path="/register" component={Register}/>}
           {!refreshCookie.refresh && <Route exact path="/login" component={Login}/>}

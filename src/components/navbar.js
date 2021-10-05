@@ -33,6 +33,7 @@ const Navbar = (props) => {
         {cookies.user && <Link to={`/profile/${cookies.user}`} className="text-aliceBlue hover:text-gray-400 mt-5">Profile</Link>}
         {/* <Link to="/" className="text-aliceBlue hover:text-gray-400 mt-5">Leaderboards</Link> */}
         {cookies.refresh && <Link to="/creategame" className="text-aliceBlue hover:text-gray-400 mt-5">Create a game</Link>}
+        {cookies.refresh && <Link to="/join" className="text-aliceBlue hover:text-gray-400 mt-5">Join a game</Link>}
         {!cookies.refresh && <Link to="/login" className="text-aliceBlue hover:text-gray-400 mt-5">Log In</Link>}
         {!cookies.refresh && <Link to="/register" className="text-aliceBlue hover:text-gray-400 mt-5">Register</Link>}
         {cookies.username && <h2 className="text-aliceBlue mt-16">Logged in as: {cookies.username}</h2>}
