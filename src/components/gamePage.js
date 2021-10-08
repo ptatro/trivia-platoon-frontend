@@ -10,10 +10,13 @@ const GamePage = (props) => {
   const [game, setGame] = useState(null);
   const [results, setResults] = useState([]);
   const {gameId} = useParams();
+  const [instanceId, setInstanceId] = useState(null);
+  const [slug, setSlug] = useState(null);
   const [error, setError] = useState("");
   const history = useHistory();
   const [userContext, setUserContext] = useContext(UserContext); // eslint-disable-line
   const [hasQuestions, setHasQuestions] = useState(false);
+  const [mpGame, setMpGame] = useState(false);
 
   const getGame = useCallback(() => {
     const genericErrorMessage = "Something went wrong! Please try again later."
@@ -93,6 +96,62 @@ const GamePage = (props) => {
       })
   }, [gameId, userContext, setResults]);
 
+  const playGame = async () => {
+    if(mpGame){
+      createGameInstance();
+    }
+    else{
+      history.push(`/play/${gameId}`);
+    }
+  }
+
+  const toggleMpOptions = () => {
+    if(document.getElementById("multiplayerCheckbox").checked){
+      setMpGame(true);
+    }
+    else{
+      setMpGame(false);
+    }
+  }
+
+  //For starting multiplayer game lobby
+  const createGameInstance = () => {
+    const genericErrorMessage = "Error creating game instance. Please try again later.";
+    const instance = {
+      maxplayers: document.getElementById("maxPlayers").value,
+      status: "lobby",
+      //player: [cookies.user],
+      creator: cookies.user,
+      game: gameId,
+      questiontimer: document.getElementById("questionTimer").value
+    }
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}api/gameinstances/`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `JWT ${userContext.access}`
+      },
+      body: JSON.stringify(instance),
+    })
+    .then(async response => {
+      if (!response.ok) {
+          let data = await response.json();
+          console.log(data);
+          setError(genericErrorMessage);
+      } else {
+        let data = await response.json();
+        setSlug(data.slug);
+        setInstanceId(data.id);
+        setError("");
+        history.push(`/lobby/${data.slug}`);
+      }
+    })
+    .catch(error => {
+      setError(error)
+    })
+  }
+
   useEffect(() => {
     if(!firstRequestDone){
       removeCookies("refresh", {path:"/game"});
@@ -125,9 +184,17 @@ const GamePage = (props) => {
             <textarea disabled className="w-3/5 h-1/3 p-2" id="gameDescriptionText" placeholder="Description" value={game ? game.description : ""}></textarea>
             <label className="text-aliceBlue mt-4 mr-2" htmlFor="categorySelect">Category</label>
             <input disabled className="w-3/5 h-10 text-lg" id="gameCategoryText" type="text" value={game ? game.category : ""}></input>
+            <label className="text-aliceBlue mt-4 mr-2" htmlFor="multiplayerCheckbox">Multiplayer</label>
+            <input id="multiplayerCheckbox" type="checkbox" className="mt-2" onChange={() => toggleMpOptions()}></input>
+            {mpGame && <>
+              <label className="text-aliceBlue mt-4 mr-2" htmlFor="maxPlayers">Max Players</label>
+              <input id="maxPlayers" type="number" max="10" min="2" defaultValue="5" className="mt-2" onChange={() => toggleMpOptions()}></input>
+              <label className="text-aliceBlue mt-4 mr-2" htmlFor="questionTimer">Seconds Per Question</label>
+              <input id="questionTimer" type="number" max="300" min="2" defaultValue="15" className="mt-2" onChange={() => toggleMpOptions()}></input>
+            </>}
             <div className="flex w-full items-center justify-center">
               <button disabled={userContext.access && hasQuestions ? false : true} className=" transition-all duration-300 bg-aliceBlue w-1/5 h-8 my-4 rounded-md self-center mr-2 hover:bg-gray-300 disabled:opacity-50"
-                onClick={(e) => {history.push(`/play/${gameId}`); e.preventDefault();}} title={userContext.access ? null : "Log in to play"}>
+                onClick={(e) => {e.preventDefault(); playGame(); }} title={userContext.access ? null : "Log in to play"}>
                 Play
               </button>
             </div>

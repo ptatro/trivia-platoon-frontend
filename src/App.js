@@ -59,7 +59,7 @@ function App() {
           {refreshCookie.refresh && <Route exact path="/edit/:gameId" component={EditGame}/>}
           {refreshCookie.refresh && <Route exact path="/creategame" component={CreateGame}/>}
           {refreshCookie.refresh && <Route exact path="/join" component={JoinGame}/>}
-          {refreshCookie.refresh && <Route exact path="/lobby" component={GameLobby}/>}
+          {refreshCookie.refresh && <Route exact path="/lobby/:slug" component={GameLobby}/>}
           {refreshCookie.refresh && <Route exact path="/profile/:profileUserId" render={(props) => <Profile key={props.match.params.profileUserId}/>}/>}
           {!refreshCookie.refresh && <Route exact path="/register" component={Register}/>}
           {!refreshCookie.refresh && <Route exact path="/login" component={Login}/>}
