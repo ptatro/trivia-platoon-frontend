@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react"
 import { UserContext } from "../context/UserContext"
 import { useCookies } from "react-cookie"
 import { useHistory } from "react-router";
+import GameLobby from "./gameLobby";
 
 const JoinGame = () => {
   const history = useHistory();
@@ -11,15 +12,13 @@ const JoinGame = () => {
   const [error, setError] = useState("")
   const [cookies, setCookie, removeCookie] = useCookies(['refresh', 'user', 'username']); // eslint-disable-line
 
-  //Temporarily getting game instance by ID
-  //TODO: get instance by slug
   const formSubmitHandler = e => {
     e.preventDefault();
     console.log(joinCode);
     setIsSubmitting(true);
     setError("")
     const genericErrorMessage = "Something went wrong! Please try again later."
-    fetch(`${process.env.REACT_APP_API_ENDPOINT}api/gameinstances`, {
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}api/lobby/${joinCode}/`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -29,28 +28,25 @@ const JoinGame = () => {
       .then(async response => {
         if (!response.ok) {
             let data = await response.json();
-            setError(genericErrorMessage);
+            setError("No valid game instances");
             console.log(data);
         } else {
           let data = await response.json();
-          //Temporary loop, until we can get instance by slug
-          //TODO: use gameinstances slug route
-          let slug;
           console.log(data);
-          for(let i = 0; i < data.length; i++){
-            
-            if(Number(data[i].id) === Number(joinCode)){
-              slug = data[i].slug;
-              break;
-            }
-          }
-          if(slug){
-            setError("");
-            history.push(`/lobby/${slug}`);
-          }
-          else{
-            setError("No valid game instances.")
-          }
+          history.push(`/lobby/${joinCode}`);
+          //Temporarily disable conditions until disconnects are handled server-side.
+          //A player that leaves is still seen as being in the game.
+
+          // if(data.status !== "lobby"){
+          //   setError("This game is already in progress.")
+          // }
+          // else if(Number(data.maxplayers) === data.player.length){
+          //   setError("This instance is full.");
+          // }
+          // else{
+          //   setError("");
+          //   history.push(`/lobby/${joinCode}`);
+          // }
           setIsSubmitting(false);
         }
       })
