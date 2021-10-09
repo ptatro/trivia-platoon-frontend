@@ -235,7 +235,7 @@ const GameLobby = (props) => {
     }
     if(userContext.access && game && !questionRequestDone){getQuestions();}
     if(socket){
-      //return () => {socket.close();}
+      return () => {socket.close();}
     }
     if(gameStatus === "started"){
       console.log("started");

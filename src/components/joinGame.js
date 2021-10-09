@@ -32,21 +32,19 @@ const JoinGame = () => {
             console.log(data);
         } else {
           let data = await response.json();
-          console.log(data);
-          history.push(`/lobby/${joinCode}`);
           //Temporarily disable conditions until disconnects are handled server-side.
           //A player that leaves is still seen as being in the game.
 
-          // if(data.status !== "lobby"){
-          //   setError("This game is already in progress.")
-          // }
-          // else if(Number(data.maxplayers) === data.player.length){
-          //   setError("This instance is full.");
-          // }
-          // else{
-          //   setError("");
-          //   history.push(`/lobby/${joinCode}`);
-          // }
+          if(data.status !== "lobby"){
+            setError("This game is already in progress.")
+          }
+          else if(Number(data.maxplayers) === data.player.length){
+            setError("This instance is full.");
+          }
+          else{
+            setError("");
+            history.push(`/lobby/${joinCode}`);
+          }
           setIsSubmitting(false);
         }
       })
