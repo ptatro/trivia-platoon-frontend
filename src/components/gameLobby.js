@@ -33,6 +33,7 @@ const GameLobby = (props) => {
   const refMessages = useRef([]);
   const genericErrorMessage = "Something went wrong! Please try again later.";
   const updatingMessages = useRef(false);
+  const settingCurrentQuestion = useRef(false);
   const [messages, setMessages] = useState([]);
 
   const getGameInstance = useCallback(() => {
@@ -163,7 +164,7 @@ const GameLobby = (props) => {
       setCurrentQuestion(currentQuestion+1);
       setGameStatus("finished");
     }
-  },[score]);
+  },[score, currentQuestion]);
 
   useEffect(() => {
     if(gameStatus === "started" && questionSeconds === questionTimer){
@@ -195,8 +196,13 @@ const GameLobby = (props) => {
 
   const socketListener = (message) => {
     if(message.data !== "message received"){
-      let data = JSON.parse(message.data);
-      if(data.message_trigger){
+      let data;
+      try{
+        data = JSON.parse(message.data);
+      }
+      catch{
+      }
+      if(data && data.message_trigger){
         if(data.message_trigger === "start"){
           if(gameStatus !== "starting"){
             beginStartTimer();
@@ -216,8 +222,13 @@ const GameLobby = (props) => {
 
   const chatListener = (message) => {
     if(message.data !== "message received" && !updatingMessages.current){
-      let data = JSON.parse(message.data);
-      if(data.chat_message){
+      let data;
+      try{
+        data = JSON.parse(message.data);
+      }
+      catch{
+      }
+      if(data && data.chat_message){
         let temp = messages;
         temp.push(data);
         updatingMessages.current = true;
@@ -353,18 +364,18 @@ const GameLobby = (props) => {
         }
         {
           gameStatus === "finished" && waitingStatus === "complete" && 
-          <div className="flex flex-col w-3/5 h-screen bg-manatee rounded-lg mt-10">
+          <div className="flex flex-col w-11/12 h-screen bg-manatee rounded-lg mt-10">
           <div className="h-16 bg-imperialRed">
             <h1 className="text-md text-aliceBlue mt-4 lg:text-3xl md:text-2xl">Results</h1>
           </div>
           <div className="h-full w-full flex flex-col items-center overflow-auto pb-8">
-            <div className="transition-all h-11/12 w-6/12 grid grid-cols-3 text-aliceBlue mt-4">
+            <div className="transition-all h-11/12 w-full grid grid-cols-3 text-aliceBlue mt-4">
               <h2 className="justify-self-start ml-5 text-xl">#</h2>
               <h2 className="justify-self-start ml-5 text-xl">User</h2>
               <h2 className="justify-self-start ml-5 text-xl">Score</h2>
             </div>
             {allResults && allResults.map((r,i) => {
-              return <div className="transition-all h-11/12 w-6/12 grid grid-cols-3 bg-aliceBlue rounded-md mt-4 hover:bg-gray-400">
+              return <div className="transition-all h-11/12 w-full grid grid-cols-3 bg-aliceBlue rounded-md mt-4 hover:bg-gray-400">
                 <h2 className="justify-self-start ml-5 text-xl">{i + 1}</h2>
                 <h2 className="justify-self-start ml-5 text-xl">{r.username}</h2>
                 <h2 className="justify-self-start ml-5 text-xl">{r.score}</h2>

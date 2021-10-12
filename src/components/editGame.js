@@ -241,12 +241,26 @@ const EditGame = () => {
             </fieldset>
             <label className="text-aliceBlue mt-4 mr-2" htmlFor="categorySelect" defaultValue={game ? game.category : ""}>Category</label>
             <select id="categorySelect" name="categorySelect" className="w-2/5 rounded-md text-lg">
-              <option value="science">Science</option>
-              <option value="art">Art</option>
-              <option value="comics">Comics</option>
-              <option value="animation">Animation</option>
-              <option value="tv-movies">TV/Movies</option>
-              <option value="other">Other</option>
+              <option value="Animal">Animal</option>
+              <option value="Art">Art</option>
+              <option value="Automotive">Automotive</option>
+              <option value="Computer">Computer</option>
+              <option value="Disney">Disney</option>
+              <option value="Food">Food</option>
+              <option value="Geography">Geography</option>
+              <option value="History">History</option>
+              <option value="Literature">Literature</option>
+              <option value="Military">Military</option>
+              <option value="Movie">Movie</option>
+              <option value="Music">Music</option>
+              <option value="Ocean">Ocean</option>
+              <option value="Political">Political</option>
+              <option value="Space">Space</option>
+              <option value="Sports">Sports</option>
+              <option value="Television">Television</option>
+              <option value="Video Game">Video Game</option>
+              <option value="World">World</option>
+              <option value="Other">Other</option>
             </select>
           </form>
         </div>
