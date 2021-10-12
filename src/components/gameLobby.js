@@ -216,12 +216,10 @@ const GameLobby = (props) => {
 
   const chatListener = (message) => {
     if(message.data !== "message received" && !updatingMessages.current){
-      console.log(message.data);
       let data = JSON.parse(message.data);
       if(data.chat_message){
         let temp = messages;
         temp.push(data);
-        console.log("update");
         updatingMessages.current = true;
         setMessages([...temp])
       }
@@ -298,7 +296,7 @@ const GameLobby = (props) => {
               <input disabled className="w-3/5 h-10 text-lg" id="gameCategoryText" type="text" value={game ? game.category : ""}></input>
               <label className="text-aliceBlue mr-2" htmlFor="instanceHost">Host</label>
               <input disabled className="w-3/5 h-10 text-lg" id="instanceHost" type="text" placeholder="Title" maxlength="255" value={gameInstance ? gameInstance.creator: ""}></input>
-              {gameInstance && Number(gameInstance.creator) === Number(cookies.user) && socket && <div className="flex w-full items-center justify-center">
+              {gameInstance && gameInstance.creator === cookies.username && socket && <div className="flex w-full items-center justify-center">
                 <button className=" transition-all duration-300 bg-aliceBlue w-1/5 h-8 my-4 rounded-md self-center mr-2 hover:bg-gray-300 disabled:opacity-50"
                   onClick={(e) => {e.preventDefault(); socket.send(JSON.stringify({creator_start: true})) }}>
                   Start
