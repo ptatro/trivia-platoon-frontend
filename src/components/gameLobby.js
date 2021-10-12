@@ -24,7 +24,7 @@ const GameLobby = (props) => {
   const [score, setScore] = useState(0);
   const [selectedRating, setSelectedRating] = useState(0);
   const [ratingSubmitted, setRatingSubmitted] = useState(false);
-  const [startTimer, setStartTimer] = useState(1);
+  const [startTimer, setStartTimer] = useState(6);
   const [questionTimer, setQuestionTimer] = useState(15);
   const [questionSeconds, setQuestionSeconds] = useState(15);
   const [waitingStatus, setWaitingStatus] = useState("waiting for other players");
@@ -229,7 +229,7 @@ const GameLobby = (props) => {
   useEffect(() => {
     updatingMessages.current = false;
     let box = document.getElementById("chatBox");
-    box.scrollBy(0, 100);
+    box.scrollBy(0, 900);
   },[messages]);
 
   const sendChat = () => {
@@ -274,7 +274,7 @@ const GameLobby = (props) => {
 
   return (
     <div className="flex flex-row w-full">
-      {(gameStatus === "lobby" || gameStatus === "starting") && <div className="flex flex-col items-center justify-start w-9/12 h-full overflow-auto pb-10 mx-6">
+      {(gameStatus === "lobby" || gameStatus === "starting") && <div className="flex flex-col items-center justify-start w-10/12 h-full overflow-auto pb-10 mx-6">
         <div className="transition-all duration-300 flex flex-col w-full h-auto bg-manatee rounded-b-lg">
           <div className="h-16 bg-imperialRed">
             <h1 className="text-md text-aliceBlue mt-4 lg:text-3xl md:text-2xl">{game ? game.name : ""}</h1>
@@ -311,7 +311,7 @@ const GameLobby = (props) => {
           </div>}
       </div>}
 
-      {(gameStatus === "started" || gameStatus === "finished") && <div className="flex flex-col items-center justify-start w-full h-full overflow-auto">
+      {(gameStatus === "started" || gameStatus === "finished") && <div className="flex flex-col items-center justify-start w-9/12 h-full overflow-auto">
       <div className="h-16 w-4/5 bg-imperialRed overflow-hidden rounded-b-md">
         <h1 className="text-md text-aliceBlue mt-4 lg:text-3xl md:text-2xl">{game ? game.name : ""}</h1>
       </div>
@@ -379,7 +379,7 @@ const GameLobby = (props) => {
       </div>
     </div>}
     {/* Chat sidebar */}
-    <div className="transition-all ease-out duration-500 flex flex-col h-full w-full items-center md:w-1/6 border border-gray-400">
+    <div className="transition-all ease-out duration-500 flex flex-col h-full w-3/12 items-center border border-gray-400">
       <div className="transition-all ease-out duration-400 flex w-full h-14 bg-imperialRed items-center justify-center overflow-hidden">
          <h1 className="transition-all duration-700 text-aliceBlue text-md overflow-hidden opacity-100 md:text-3xl">Chat</h1>
       </div>
