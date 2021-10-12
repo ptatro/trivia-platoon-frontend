@@ -341,7 +341,7 @@ const GameLobby = (props) => {
                 <label type="text" htmlFor="answerRadio3" id="answerText3" className="w-4/5 h-10 text-lg">{questions[currentQuestion].answers[3].text}</label>
               </span>}
         </div>}
-        { currentQuestion === questions.length && firstRequestDone && questionRequestDone && (
+        { gameStatus === "finished" && (
             <div id="answersDiv"className="flex flex-col bg-gray-300 items-center justify-start rounded-md px-4 pt-2 pb-6 w-11/12 h-auto mt-10">
               <h2 className="text-3xl">{`${score} correct out of ${questions.length}!`}</h2>
             </div>
