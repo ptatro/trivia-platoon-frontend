@@ -153,7 +153,7 @@ const CreateGame = () => {
         <div className="flex flex-col h-full w-full">
         {error && <h1 className="mt-4 text-lg text-red-600">{error}</h1>}
           <form id="gameDetailsForm" className={`flex flex-col h-full w-full justify-start items-center pt-2 ${gameDetailsCollapsed ? "hidden" : ""}`}>
-            <input readOnly={gameId !== null} className="w-3/5 h-10 text-lg" id="gameTitleInput" type="text" placeholder="Title" maxlength="255"></input>
+            <input readOnly={gameId !== null} className="w-3/5 h-10 text-lg" id="gameTitleInput" type="text" placeholder="Title" maxLength="255"></input>
             <textarea readOnly={gameId !== null} className="w-3/5 h-1/3 mt-5 p-2" id="gameDescriptionText" placeholder="Description"></textarea>
             <fieldset className="flex flex-row w-3/5 my-4 border-2 border-aliceBlue rounded-md">
               <label className="text-spaceCadet mt-4 mr-2" htmlFor="gameImageUpload">Choose an image for the game (optional):</label>
@@ -254,8 +254,8 @@ const CreateGame = () => {
                 </span>
                 <label className="text-aliceBlue mt-4 mr-2 text-lg" htmlFor="questionTypeSelect">Category</label>
                 <select disabled readOnly id="questionTypeSelect" name="questionTypeSelect" className="w-2/5 h-8 text-md mt-1 rounded-md" onChange={(e) => {setQuestionType(e.target.value);}}>
-                    <option selected={q.type === "multipleChoice" ? "true": null} value="multipleChoice">Multiple Choice</option>
-                    <option selected={q.type === "trueFalse" ? "true": null} value="trueFalse">True or False</option>
+                    <option selected={q.type === "multipleChoice" ? true: null} value="multipleChoice">Multiple Choice</option>
+                    <option selected={q.type === "trueFalse" ? true: null} value="trueFalse">True or False</option>
                 </select>
                 <h2 className="text-aliceBlue mt-2 text-lg">Answer</h2>
                 {q.type === "trueFalse" &&
