@@ -338,7 +338,7 @@ const GameLobby = (props) => {
           {allResults && allResults.map((r,i) => {
             return <div className="transition-all h-11/12 w-6/12 grid grid-cols-3 bg-aliceBlue rounded-md mt-4 hover:bg-gray-400">
               <h2 className="justify-self-start ml-5 text-xl">{i + 1}</h2>
-              <h2 className="justify-self-start ml-5 text-xl">{r.player}</h2>
+              <h2 className="justify-self-start ml-5 text-xl">{r.username}</h2>
               <h2 className="justify-self-start ml-5 text-xl">{r.score}</h2>
             </div>
             })}
