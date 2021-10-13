@@ -47,6 +47,9 @@ function App() {
     verifyUser()
   }, [verifyUser])
 
+  useEffect(() => {
+    document.title = "Trivia Platoon"
+  }, []);
 
   return (
     <div className="App h-screen bg-aliceBlue flex flex-row">
