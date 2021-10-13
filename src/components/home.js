@@ -68,7 +68,7 @@ const Home = (props) => {
           <h2 className="justify-self-start ml-5 text-xl">{g.name}</h2>
           <h2 className="justify-self-start ml-5 text-xl">{g.creator.username}</h2>
           <h2 className="justify-self-start ml-5 text-xl">{g.category}</h2>
-          <h2 className="justify-self-start ml-5 text-xl">{g.rating_count ? Math.round((Number(g.rating_total)/Number(g.rating_count))*10)/10 : "No Ratings"}</h2>
+          <h2 className="justify-self-start ml-5 text-xl">{Number(g.rating_count) > 0 ? Math.round((Number(g.rating_total)/Number(g.rating_count))*10)/10 : "No Ratings"}</h2>
         </div>
         })}
       </div>

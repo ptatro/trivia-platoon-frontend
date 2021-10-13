@@ -153,7 +153,7 @@ const CreateGame = () => {
         <div className="flex flex-col h-full w-full">
         {error && <h1 className="mt-4 text-lg text-red-600">{error}</h1>}
           <form id="gameDetailsForm" className={`flex flex-col h-full w-full justify-start items-center pt-2 ${gameDetailsCollapsed ? "hidden" : ""}`}>
-            <input readOnly={gameId !== null} className="w-3/5 h-10 text-lg" id="gameTitleInput" type="text" placeholder="Title" maxlength="255"></input>
+            <input readOnly={gameId !== null} className="w-3/5 h-10 text-lg" id="gameTitleInput" type="text" placeholder="Title" maxLength="255"></input>
             <textarea readOnly={gameId !== null} className="w-3/5 h-1/3 mt-5 p-2" id="gameDescriptionText" placeholder="Description"></textarea>
             <fieldset className="flex flex-row w-3/5 my-4 border-2 border-aliceBlue rounded-md">
               <label className="text-spaceCadet mt-4 mr-2" htmlFor="gameImageUpload">Choose an image for the game (optional):</label>
@@ -161,12 +161,26 @@ const CreateGame = () => {
             </fieldset>
             <label className="text-aliceBlue mt-4 mr-2" htmlFor="categorySelect">Category</label>
             <select disabled={gameId !== null} id="categorySelect" name="categorySelect" className="w-2/5 rounded-md text-lg">
-              <option value="science">Science</option>
-              <option value="art">Art</option>
-              <option value="comics">Comics</option>
-              <option value="animation">Animation</option>
-              <option value="tv-movies">TV/Movies</option>
-              <option value="other">Other</option>
+              <option value="Animal">Animal</option>
+              <option value="Art">Art</option>
+              <option value="Automotive">Automotive</option>
+              <option value="Computer">Computer</option>
+              <option value="Disney">Disney</option>
+              <option value="Food">Food</option>
+              <option value="Geography">Geography</option>
+              <option value="History">History</option>
+              <option value="Literature">Literature</option>
+              <option value="Military">Military</option>
+              <option value="Movie">Movie</option>
+              <option value="Music">Music</option>
+              <option value="Ocean">Ocean</option>
+              <option value="Political">Political</option>
+              <option value="Space">Space</option>
+              <option value="Sports">Sports</option>
+              <option value="Television">Television</option>
+              <option value="Video Game">Video Game</option>
+              <option value="World">World</option>
+              <option value="Other">Other</option>
             </select>
             <div className="flex w-full items-center justify-center">
               <button hidden={gameId !== null} className="transition-all duration-300 bg-aliceBlue w-1/5 h-8 my-4 rounded-md self-center hover:bg-gray-300 mr-2"
@@ -254,8 +268,8 @@ const CreateGame = () => {
                 </span>
                 <label className="text-aliceBlue mt-4 mr-2 text-lg" htmlFor="questionTypeSelect">Category</label>
                 <select disabled readOnly id="questionTypeSelect" name="questionTypeSelect" className="w-2/5 h-8 text-md mt-1 rounded-md" onChange={(e) => {setQuestionType(e.target.value);}}>
-                    <option selected={q.type === "multipleChoice" ? "true": null} value="multipleChoice">Multiple Choice</option>
-                    <option selected={q.type === "trueFalse" ? "true": null} value="trueFalse">True or False</option>
+                    <option selected={q.type === "multipleChoice" ? true: null} value="multipleChoice">Multiple Choice</option>
+                    <option selected={q.type === "trueFalse" ? true: null} value="trueFalse">True or False</option>
                 </select>
                 <h2 className="text-aliceBlue mt-2 text-lg">Answer</h2>
                 {q.type === "trueFalse" &&

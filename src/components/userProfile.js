@@ -67,9 +67,12 @@ const Profile = (props) => {
   }
   useEffect(() => {
     if(!firstRequestDone){
+      removeCookies("refresh", {path:"/profile"});
+      removeCookies("user", {path:"/profile"});
+      removeCookies("username", {path:"/profile"});  
       getUserGames();
     }
-  }, [games, getUserGames, firstRequestDone]);
+  }, [games, getUserGames, firstRequestDone, removeCookies]);
 
 
   return (<div className="transition-all flex flex-col w-full h-full items-center">
